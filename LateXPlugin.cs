@@ -35,6 +35,7 @@ using System.Linq;
 using System.Windows.Input;
 using mshtml;
 using SuperMemoAssistant.Interop.Plugins;
+using SuperMemoAssistant.Interop.SuperMemo.Components.Controls;
 using SuperMemoAssistant.Services;
 using SuperMemoAssistant.Interop.SuperMemo.Core;
 using SuperMemoAssistant.Sys;
@@ -139,8 +140,11 @@ namespace SuperMemoAssistant.Plugins.LateX
 
     private (LatexDocument texDoc, IHTMLDocument2 htmlDoc) GetDocuments()
     {
-      IHTMLDocument2 htmlDoc = null;//Svc.SMA.UI.ElementWindow.HtmlDocuments.FirstOrDefault();
-      var elementId = Svc.SMA.UI.ElementWindow.CurrentElementId;
+      if (!(Svc.SMA.UI.ElementWindow.ControlGroup.FocusedControl is IControlWeb ctrlWeb))
+        return (null, null);
+
+      IHTMLDocument2 htmlDoc = ctrlWeb.Document;
+      var elementId = Svc.SMA.UI.ElementWindow.CurrentElementId;      
 
       if (htmlDoc == null || elementId <= 0)
         return (null, null);
