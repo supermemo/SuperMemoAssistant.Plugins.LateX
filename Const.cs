@@ -173,7 +173,7 @@ $
 
       public static string TempFilePath =>
         System.IO.Path.Combine(System.IO.Path.GetTempPath(),
-                               SMAPluginBase.GetAssemblyGuid().ToString("D"));
+                               AssemblyEx.GetAssemblyGuid().ToString("D"));
       public static string TempTexFilePath =>
         TempFilePath + ".tex";
       public static string TempDviFilePath =>

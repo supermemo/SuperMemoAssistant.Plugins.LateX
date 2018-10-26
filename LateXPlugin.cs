@@ -22,7 +22,7 @@
 // 
 // 
 // Created On:   2018/05/30 17:20
-// Modified On:  2018/06/06 15:41
+// Modified On:  2018/10/26 22:40
 // Modified By:  Alexis
 
 #endregion
@@ -30,27 +30,23 @@
 
 
 
-using System;
-using System.Linq;
 using System.Windows.Input;
 using mshtml;
 using SuperMemoAssistant.Interop.Plugins;
 using SuperMemoAssistant.Interop.SuperMemo.Components.Controls;
-using SuperMemoAssistant.Services;
 using SuperMemoAssistant.Interop.SuperMemo.Core;
+using SuperMemoAssistant.Services;
 using SuperMemoAssistant.Sys;
 using SuperMemoAssistant.Sys.IO.Devices;
 
 namespace SuperMemoAssistant.Plugins.LateX
 {
   // ReSharper disable once UnusedMember.Global
-  public class LateXPlugin : SMAPluginBase
+  public class LateXPlugin : SMAPluginBase<LateXPlugin>
   {
     #region Constructors
 
-    public LateXPlugin()
-    {
-    }
+    public LateXPlugin() { }
 
     #endregion
 
@@ -83,21 +79,21 @@ namespace SuperMemoAssistant.Plugins.LateX
     {
       LoadConfigOrDefault();
 
-      Svc.SMA.UI.ElementWindow.OnElementChanged += new ActionProxy<SMElementArgs>(OnElementChanged);
-      Svc.KeyboardHotKey.RegisterHotKey(new HotKey(true,
-                                                   false,
-                                                   false,
-                                                   true,
-                                                   Key.L,
-                                                   "LateX: Convert LateX to Image"),
-                                        ConvertLatexToImages);
-      Svc.KeyboardHotKey.RegisterHotKey(new HotKey(true,
-                                                   false,
-                                                   true,
-                                                   true,
-                                                   Key.L,
-                                                   "LateX: Convert Image to LateX"),
-                                        ConvertImagesToLatex);
+      Svc<LateXPlugin>.SMA.UI.ElementWindow.OnElementChanged += new ActionProxy<SMElementArgs>(OnElementChanged);
+      Svc<LateXPlugin>.KeyboardHotKey.RegisterHotKey(new HotKey(true,
+                                                                false,
+                                                                false,
+                                                                true,
+                                                                Key.L,
+                                                                "LateX: Convert LateX to Image"),
+                                                     ConvertLatexToImages);
+      Svc<LateXPlugin>.KeyboardHotKey.RegisterHotKey(new HotKey(true,
+                                                                false,
+                                                                true,
+                                                                true,
+                                                                Key.L,
+                                                                "LateX: Convert Image to LateX"),
+                                                     ConvertImagesToLatex);
     }
 
     #endregion
@@ -110,7 +106,7 @@ namespace SuperMemoAssistant.Plugins.LateX
     // TODO: Check exception if element changed inbetween
     public void OnElementChanged(SMElementArgs e)
     {
-      var(texDoc, htmlDoc) = GetDocuments();
+      var (texDoc, htmlDoc) = GetDocuments();
 
       if (texDoc == null || htmlDoc == null)
         return;
@@ -120,7 +116,7 @@ namespace SuperMemoAssistant.Plugins.LateX
 
     private void ConvertLatexToImages()
     {
-      var(texDoc, htmlDoc) = GetDocuments();
+      var (texDoc, htmlDoc) = GetDocuments();
 
       if (texDoc == null || htmlDoc == null)
         return;
@@ -130,7 +126,7 @@ namespace SuperMemoAssistant.Plugins.LateX
 
     private void ConvertImagesToLatex()
     {
-      var(texDoc, htmlDoc) = GetDocuments();
+      var (texDoc, htmlDoc) = GetDocuments();
 
       if (texDoc == null || htmlDoc == null)
         return;
@@ -140,34 +136,33 @@ namespace SuperMemoAssistant.Plugins.LateX
 
     private (LatexDocument texDoc, IHTMLDocument2 htmlDoc) GetDocuments()
     {
-      if (!(Svc.SMA.UI.ElementWindow.ControlGroup.FocusedControl is IControlWeb ctrlWeb))
+      if (!(Svc<LateXPlugin>.SMA.UI.ElementWindow.ControlGroup.FocusedControl is IControlWeb ctrlWeb))
         return (null, null);
 
-      IHTMLDocument2 htmlDoc = ctrlWeb.Document;
-      var elementId = Svc.SMA.UI.ElementWindow.CurrentElementId;      
+      IHTMLDocument2 htmlDoc   = ctrlWeb.Document;
+      var            elementId = Svc<LateXPlugin>.SMA.UI.ElementWindow.CurrentElementId;
 
       if (htmlDoc == null || elementId <= 0)
         return (null, null);
-      
+
       string html = htmlDoc.body.innerHTML ?? string.Empty;
 
-      var texDoc = new LatexDocument(this,
-                                       Config,
-                                       elementId,
-                                       html);
+      var texDoc = new LatexDocument(Config,
+                                     elementId,
+                                     html);
 
       return (texDoc, htmlDoc);
     }
 
     private void LoadConfigOrDefault()
     {
-      Config = Svc.Configuration.Load<LateXCfg>().Result;
+      Config = Svc<LateXPlugin>.Configuration.Load<LateXCfg>().Result;
 
       if (Config == null || Config.IsValid() == false)
       {
         Config = Const.Default;
 
-        Svc.Configuration.Save(Config);
+        Svc<LateXPlugin>.Configuration.Save(Config);
       }
     }
 

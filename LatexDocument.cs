@@ -22,7 +22,7 @@
 // 
 // 
 // Created On:   2018/06/02 22:15
-// Modified On:  2018/06/08 17:12
+// Modified On:  2018/10/26 22:41
 // Modified By:  Alexis
 
 #endregion
@@ -49,8 +49,6 @@ namespace SuperMemoAssistant.Plugins.LateX
   {
     #region Properties & Fields - Non-Public
 
-    private ISMAPlugin Plugin { get; }
-
     private LateXCfg Config    { get; }
     private int      ElementId { get; }
     private string   Selection { get; set; }
@@ -64,13 +62,11 @@ namespace SuperMemoAssistant.Plugins.LateX
     #region Constructors
 
     public LatexDocument(
-      [NotNull] ISMAPlugin plugin,
       [NotNull] LateXCfg   config,
       int                  elementId,
       [NotNull] string     html,
       string               selection = null)
     {
-      Plugin    = plugin;
       Config    = config;
       ElementId = elementId;
       Html      = html;
@@ -87,25 +83,25 @@ namespace SuperMemoAssistant.Plugins.LateX
     public void PruneOrphanImages()
     {
       var usedFSIds = GetAllImages().Select(i => i.fileId);
-      var allFSIds = Svc.CollectionFS.ForElement(ElementId,
-                                                 Plugin);
+      var allFSIds = Svc<LateXPlugin>.CollectionFS.ForElementWithPlugin(ElementId);
 
       foreach (var idToRm in allFSIds.Select(f => f.Id).Except(usedFSIds))
-        Svc.CollectionFS.DeleteById(idToRm);
+        Svc<LateXPlugin>.CollectionFS.DeleteById(idToRm);
     }
 
     public string ConvertImagesToLatex()
     {
-      var newSelection = Selection.Clone() as string;
+      var newSelection  = Selection.Clone() as string;
       var allImagesData = GetAllImages();
 
       foreach (var (html, fileId, filePath) in allImagesData)
       {
-        var texBytes = PngChunkService.ReadCustomChunk(filePath, Const.PNG.LatexChunkId);
+        var texBytes = PngChunkService.ReadCustomChunk(filePath,
+                                                       Const.PNG.LatexChunkId);
         var tex = Encoding.UTF8.GetString(texBytes);
 
         newSelection = newSelection.ReplaceFirst(html,
-                               tex);
+                                                 tex);
       }
 
       Html = Html.Replace(Selection,
@@ -202,11 +198,10 @@ namespace SuperMemoAssistant.Plugins.LateX
 
       string imgFileCrc32 = FileEx.GetCrc32(imgFilePath);
 
-      return Svc.CollectionFS.Create(Plugin,
-                                     ElementId,
-                                     StreamCopier,
-                                     ".png",
-                                     imgFileCrc32);
+      return Svc<LateXPlugin>.CollectionFS.Create(ElementId,
+                                                  StreamCopier,
+                                                  ".png",
+                                                  imgFileCrc32);
     }
 
     private IEnumerable<(bool success, string imgFilePathOrError, string fullHtml)> GenerateImages(
@@ -258,7 +253,7 @@ namespace SuperMemoAssistant.Plugins.LateX
     private HashSet<(string html, int fileId, string filePath)> GetAllImages()
     {
       HashSet<(string, int, string)> ret     = new HashSet<(string, int, string)>();
-      var                    matches = Const.RE.LatexImage.Matches(Selection);
+      var                            matches = Const.RE.LatexImage.Matches(Selection);
 
       foreach (Match imgMatch in matches)
       {
