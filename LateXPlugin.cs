@@ -79,7 +79,7 @@ namespace SuperMemoAssistant.Plugins.LateX
     {
       LoadConfigOrDefault();
 
-      Svc<LateXPlugin>.SMA.UI.ElementWindow.OnElementChanged += new ActionProxy<SMElementArgs>(OnElementChanged);
+      Svc.SMA.UI.ElementWindow.OnElementChanged += new ActionProxy<SMDisplayedElementChangedArgs>(OnElementChanged);
       Svc<LateXPlugin>.KeyboardHotKey.RegisterHotKey(new HotKey(true,
                                                                 false,
                                                                 false,
@@ -104,7 +104,7 @@ namespace SuperMemoAssistant.Plugins.LateX
     #region Methods
 
     // TODO: Check exception if element changed inbetween
-    public void OnElementChanged(SMElementArgs e)
+    public void OnElementChanged(SMDisplayedElementChangedArgs e)
     {
       var (texDoc, htmlDoc) = GetDocuments();
 
@@ -136,11 +136,11 @@ namespace SuperMemoAssistant.Plugins.LateX
 
     private (LatexDocument texDoc, IHTMLDocument2 htmlDoc) GetDocuments()
     {
-      if (!(Svc<LateXPlugin>.SMA.UI.ElementWindow.ControlGroup.FocusedControl is IControlWeb ctrlWeb))
+      if (!(Svc.SMA.UI.ElementWindow.ControlGroup.FocusedControl is IControlWeb ctrlWeb))
         return (null, null);
 
       IHTMLDocument2 htmlDoc   = ctrlWeb.Document;
-      var            elementId = Svc<LateXPlugin>.SMA.UI.ElementWindow.CurrentElementId;
+      var            elementId = Svc.SMA.UI.ElementWindow.CurrentElementId;
 
       if (htmlDoc == null || elementId <= 0)
         return (null, null);
