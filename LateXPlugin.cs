@@ -22,7 +22,7 @@
 // 
 // 
 // Created On:   2018/05/30 17:20
-// Modified On:  2018/10/26 22:40
+// Modified On:  2018/11/22 13:52
 // Modified By:  Alexis
 
 #endregion
@@ -30,8 +30,10 @@
 
 
 
+using System;
 using System.Windows.Input;
 using mshtml;
+using SuperMemoAssistant.Extensions;
 using SuperMemoAssistant.Interop.Plugins;
 using SuperMemoAssistant.Interop.SuperMemo.Components.Controls;
 using SuperMemoAssistant.Interop.SuperMemo.Core;
@@ -106,12 +108,16 @@ namespace SuperMemoAssistant.Plugins.LateX
     // TODO: Check exception if element changed inbetween
     public void OnElementChanged(SMDisplayedElementChangedArgs e)
     {
-      var (texDoc, htmlDoc) = GetDocuments();
+      try
+      {
+        var (texDoc, htmlDoc) = GetDocuments();
 
-      if (texDoc == null || htmlDoc == null)
-        return;
+        if (texDoc == null || htmlDoc == null)
+          return;
 
-      texDoc.PruneOrphanImages();
+        texDoc.PruneOrphanImages();
+      }
+      catch (Exception) { }
     }
 
     private void ConvertLatexToImages()
@@ -136,7 +142,9 @@ namespace SuperMemoAssistant.Plugins.LateX
 
     private (LatexDocument texDoc, IHTMLDocument2 htmlDoc) GetDocuments()
     {
-      if (!(Svc.SMA.UI.ElementWindow.ControlGroup.FocusedControl is IControlWeb ctrlWeb))
+      IControlWeb ctrlWeb = Svc.SMA.UI.ElementWindow.ControlGroup.FocusedControl.AsWeb();
+
+      if (ctrlWeb == null)
         return (null, null);
 
       IHTMLDocument2 htmlDoc   = ctrlWeb.Document;
