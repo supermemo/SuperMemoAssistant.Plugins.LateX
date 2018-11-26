@@ -142,12 +142,12 @@ namespace SuperMemoAssistant.Plugins.LateX
 
     private (LatexDocument texDoc, IHTMLDocument2 htmlDoc) GetDocuments()
     {
-      IControlWeb ctrlWeb = Svc.SMA.UI.ElementWindow.ControlGroup.FocusedControl.AsWeb();
+      IControlHtml ctrlHtml = Svc.SMA.UI.ElementWindow.ControlGroup.FocusedControl.AsHtml();
 
-      if (ctrlWeb == null)
+      if (ctrlHtml == null)
         return (null, null);
 
-      IHTMLDocument2 htmlDoc   = ctrlWeb.Document;
+      IHTMLDocument2 htmlDoc   = ctrlHtml.Document;
       var            elementId = Svc.SMA.UI.ElementWindow.CurrentElementId;
 
       if (htmlDoc == null || elementId <= 0)
