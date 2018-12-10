@@ -32,7 +32,6 @@
 
 using System;
 using System.Windows.Input;
-using mshtml;
 using SuperMemoAssistant.Extensions;
 using SuperMemoAssistant.Interop.Plugins;
 using SuperMemoAssistant.Interop.SuperMemo.Components.Controls;
@@ -44,6 +43,7 @@ using SuperMemoAssistant.Sys.IO.Devices;
 namespace SuperMemoAssistant.Plugins.LateX
 {
   // ReSharper disable once UnusedMember.Global
+  // ReSharper disable once ClassNeverInstantiated.Global
   public class LateXPlugin : SMAPluginBase<LateXPlugin>
   {
     #region Constructors
@@ -110,6 +110,9 @@ namespace SuperMemoAssistant.Plugins.LateX
     {
       try
       {
+        return;
+
+        // TODO: Improve pruning
         var (texDoc, htmlDoc) = GetDocuments();
 
         if (texDoc == null || htmlDoc == null)
@@ -127,7 +130,7 @@ namespace SuperMemoAssistant.Plugins.LateX
       if (texDoc == null || htmlDoc == null)
         return;
 
-      htmlDoc.body.innerHTML = texDoc.ConvertLatexToImages();
+      htmlDoc.Text = texDoc.ConvertLatexToImages();
     }
 
     private void ConvertImagesToLatex()
@@ -137,29 +140,24 @@ namespace SuperMemoAssistant.Plugins.LateX
       if (texDoc == null || htmlDoc == null)
         return;
 
-      htmlDoc.body.innerHTML = texDoc.ConvertImagesToLatex();
+      htmlDoc.Text = texDoc.ConvertImagesToLatex();
     }
 
-    private (LatexDocument texDoc, IHTMLDocument2 htmlDoc) GetDocuments()
+    private (LatexDocument texDoc, IControlHtml ctrlHtml) GetDocuments()
     {
       IControlHtml ctrlHtml = Svc.SMA.UI.ElementWindow.ControlGroup.FocusedControl.AsHtml();
 
       if (ctrlHtml == null)
         return (null, null);
 
-      IHTMLDocument2 htmlDoc   = ctrlHtml.Document;
-      var            elementId = Svc.SMA.UI.ElementWindow.CurrentElementId;
-
-      if (htmlDoc == null || elementId <= 0)
-        return (null, null);
-
-      string html = htmlDoc.body.innerHTML ?? string.Empty;
+      int elementId = Svc.SMA.UI.ElementWindow.CurrentElementId;
+      string html = ctrlHtml.Text ?? string.Empty;
 
       var texDoc = new LatexDocument(Config,
                                      elementId,
                                      html);
 
-      return (texDoc, htmlDoc);
+      return (texDoc, ctrlHtml);
     }
 
     private void LoadConfigOrDefault()
