@@ -166,7 +166,7 @@ namespace SuperMemoAssistant.Plugins.LateX
 
       if (Config == null || Config.IsValid() == false)
       {
-        Config = Const.Default;
+        Config = LaTeXConst.Default;
 
         Svc<LateXPlugin>.Configuration.Save(Config);
       }

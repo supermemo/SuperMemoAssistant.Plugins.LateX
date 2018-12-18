@@ -97,7 +97,7 @@ namespace SuperMemoAssistant.Plugins.LateX
       foreach (var (html, fileId, filePath) in allImagesData)
       {
         var texBytes = PngChunkService.ReadCustomChunk(filePath,
-                                                       Const.PNG.LatexChunkId);
+                                                       LaTeXConst.PNG.LatexChunkId);
         var tex = Encoding.UTF8.GetString(texBytes);
 
         newSelection = newSelection.ReplaceFirst(html,
@@ -113,7 +113,7 @@ namespace SuperMemoAssistant.Plugins.LateX
 
     public string ConvertLatexToImages()
     {
-      string newSelection = Const.RE.LatexError.Replace(Selection,
+      string newSelection = LaTeXConst.RE.LatexError.Replace(Selection,
                                                         string.Empty);
       var filters = Config.Filters;
 
@@ -174,7 +174,7 @@ namespace SuperMemoAssistant.Plugins.LateX
 
     private string GenerateImgHtml(CollectionFile colFile)
     {
-      return String.Format(Const.Html.LatexImage,
+      return String.Format(LaTeXConst.Html.LatexImage,
                            colFile.Id,
                            colFile.Path);
     }
@@ -182,9 +182,9 @@ namespace SuperMemoAssistant.Plugins.LateX
     private string GenerateErrorHtml(string html,
                                      string error)
     {
-      error = LateXUtils.TextToHtml(error);
+      error = LateXUtils.TextToHtml(error ?? string.Empty);
 
-      return html + string.Format(Const.Html.LatexError,
+      return html + string.Format(LaTeXConst.Html.LatexError,
                                   error);
     }
 
@@ -235,7 +235,7 @@ namespace SuperMemoAssistant.Plugins.LateX
             PngChunkService.WriteCustomChunk(
               pathOrError,
               null,
-              Const.PNG.LatexChunkId,
+              LaTeXConst.PNG.LatexChunkId,
               Encoding.UTF8.GetBytes(tag.SurroundTexWith(latex))
             );
 
@@ -253,13 +253,13 @@ namespace SuperMemoAssistant.Plugins.LateX
     private HashSet<(string html, int fileId, string filePath)> GetAllImages()
     {
       HashSet<(string, int, string)> ret     = new HashSet<(string, int, string)>();
-      var                            matches = Const.RE.LatexImage.Matches(Selection);
+      var                            matches = LaTeXConst.RE.LatexImage.Matches(Selection);
 
       foreach (Match imgMatch in matches)
       {
         var html          = imgMatch.Groups[0].Value;
-        var fileIdMatch   = Const.RE.LatexImageFileId.Match(html);
-        var filePathMatch = Const.RE.LatexImageFilePath.Match(html);
+        var fileIdMatch   = LaTeXConst.RE.LatexImageFileId.Match(html);
+        var filePathMatch = LaTeXConst.RE.LatexImageFilePath.Match(html);
 
         if (fileIdMatch.Success && filePathMatch.Success)
         {

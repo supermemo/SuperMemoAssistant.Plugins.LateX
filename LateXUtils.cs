@@ -65,13 +65,13 @@ namespace SuperMemoAssistant.Plugins.LateX
 
     public static string HtmlToLateX(string html)
     {
-      html = Const.RE.Br.Replace(html,
+      html = LaTeXConst.RE.Br.Replace(html,
                                  "\\n");
-      html = Const.RE.DivOpen.Replace(html,
+      html = LaTeXConst.RE.DivOpen.Replace(html,
                                       "\\n");
-      html = Const.RE.DivClose.Replace(html,
+      html = LaTeXConst.RE.DivClose.Replace(html,
                                        "");
-      html = Const.RE.Html.Replace(html,
+      html = LaTeXConst.RE.Html.Replace(html,
                                    "");
 
       return html.Trim();
@@ -82,15 +82,15 @@ namespace SuperMemoAssistant.Plugins.LateX
       switch (arg)
       {
         case "{inTex}":
-          return Const.Paths.TempTexFilePath;
+          return LaTeXConst.Paths.TempTexFilePath;
 
         case "{inDvi}":
-          return Const.Paths.TempDviFilePath;
+          return LaTeXConst.Paths.TempDviFilePath;
 
         default:
           return arg.StartsWith("{outImg}")
             ? arg.Replace("{outImg}",
-                          Const.Paths.TempFilePath)
+                          LaTeXConst.Paths.TempFilePath)
             : arg;
       }
     }
@@ -111,19 +111,19 @@ namespace SuperMemoAssistant.Plugins.LateX
                                                                      LateXTag tag,
                                                                      string   latexContent)
     {
-      if (File.Exists(Const.Paths.TempTexFilePath))
-        File.Delete(Const.Paths.TempTexFilePath);
+      if (File.Exists(LaTeXConst.Paths.TempTexFilePath))
+        File.Delete(LaTeXConst.Paths.TempTexFilePath);
 
-      if (File.Exists(Const.Paths.TempDviFilePath))
-        File.Delete(Const.Paths.TempDviFilePath);
+      if (File.Exists(LaTeXConst.Paths.TempDviFilePath))
+        File.Delete(LaTeXConst.Paths.TempDviFilePath);
 
       latexContent = tag.LateXBegin + latexContent + tag.LateXEnd;
 
-      File.WriteAllText(Const.Paths.TempTexFilePath,
+      File.WriteAllText(LaTeXConst.Paths.TempTexFilePath,
                         latexContent);
       var (success, output) = Execute(config.DviGenerationCmd);
 
-      return (success, success ? Const.Paths.TempDviFilePath : output);
+      return (success, success ? LaTeXConst.Paths.TempDviFilePath : output);
     }
 
     public static (bool success, string output) Execute(List<string> fullCmd)

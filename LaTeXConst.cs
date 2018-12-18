@@ -22,7 +22,7 @@
 // 
 // 
 // Created On:   2018/05/31 17:47
-// Modified On:  2018/06/06 15:16
+// Modified On:  2018/12/15 14:44
 // Modified By:  Alexis
 
 #endregion
@@ -33,11 +33,11 @@
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using SuperMemoAssistant.Extensions;
-using SuperMemoAssistant.Interop.Plugins;
+// ReSharper disable MemberHidesStaticFromOuterClass
 
 namespace SuperMemoAssistant.Plugins.LateX
 {
-  public static class Const
+  public static class LaTeXConst
   {
     #region Constants & Statics
 
