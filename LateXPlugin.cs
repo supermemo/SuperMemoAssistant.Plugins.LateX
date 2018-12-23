@@ -83,16 +83,16 @@ namespace SuperMemoAssistant.Plugins.LateX
 
       Svc.SMA.UI.ElementWindow.OnElementChanged += new ActionProxy<SMDisplayedElementChangedArgs>(OnElementChanged);
       Svc<LateXPlugin>.KeyboardHotKey.RegisterHotKey(new HotKey(true,
-                                                                false,
-                                                                false,
                                                                 true,
+                                                                false,
+                                                                false,
                                                                 Key.L,
                                                                 "LateX: Convert LateX to Image"),
                                                      ConvertLatexToImages);
       Svc<LateXPlugin>.KeyboardHotKey.RegisterHotKey(new HotKey(true,
+                                                                true,
+                                                                true,
                                                                 false,
-                                                                true,
-                                                                true,
                                                                 Key.L,
                                                                 "LateX: Convert Image to LateX"),
                                                      ConvertImagesToLatex);
@@ -123,24 +123,28 @@ namespace SuperMemoAssistant.Plugins.LateX
       catch (Exception) { }
     }
 
-    private void ConvertLatexToImages()
+    private bool ConvertLatexToImages()
     {
       var (texDoc, htmlDoc) = GetDocuments();
 
       if (texDoc == null || htmlDoc == null)
-        return;
+        return true;
 
       htmlDoc.Text = texDoc.ConvertLatexToImages();
+      
+      return true;
     }
 
-    private void ConvertImagesToLatex()
+    private bool ConvertImagesToLatex()
     {
       var (texDoc, htmlDoc) = GetDocuments();
 
       if (texDoc == null || htmlDoc == null)
-        return;
+        return true;
 
       htmlDoc.Text = texDoc.ConvertImagesToLatex();
+      
+      return true;
     }
 
     private (LatexDocument texDoc, IControlHtml ctrlHtml) GetDocuments()
