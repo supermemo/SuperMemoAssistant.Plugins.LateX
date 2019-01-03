@@ -43,7 +43,7 @@ namespace SuperMemoAssistant.Plugins.LateX
     [JsonIgnore]
     private Dictionary<Regex, LateXTag> _filters = null;
     [JsonIgnore]
-    public Dictionary<Regex, LateXTag> Filters => _filters ?? GenerateTagsRegex();
+    public Dictionary<Regex, LateXTag> Filters => _filters ?? (_filters = GenerateTagsRegex());
 
     public List<string>                 DviGenerationCmd   { get; set; }
     public List<string>                 ImageGenerationCmd { get; set; }

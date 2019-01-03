@@ -22,7 +22,7 @@
 // 
 // 
 // Created On:   2018/05/30 17:20
-// Modified On:  2018/11/22 13:52
+// Modified On:  2018/12/31 00:56
 // Modified By:  Alexis
 
 #endregion
@@ -67,7 +67,7 @@ namespace SuperMemoAssistant.Plugins.LateX
     #region Properties Impl - Public
 
     /// <inheritdoc />
-    public override string Name => "LateX";
+    public override string Name => "LaTeX";
 
     #endregion
 
@@ -82,20 +82,22 @@ namespace SuperMemoAssistant.Plugins.LateX
       LoadConfigOrDefault();
 
       Svc.SMA.UI.ElementWindow.OnElementChanged += new ActionProxy<SMDisplayedElementChangedArgs>(OnElementChanged);
-      Svc<LateXPlugin>.KeyboardHotKey.RegisterHotKey(new HotKey(true,
-                                                                true,
-                                                                false,
-                                                                false,
-                                                                Key.L,
-                                                                "LateX: Convert LateX to Image"),
-                                                     ConvertLatexToImages);
-      Svc<LateXPlugin>.KeyboardHotKey.RegisterHotKey(new HotKey(true,
-                                                                true,
-                                                                true,
-                                                                false,
-                                                                Key.L,
-                                                                "LateX: Convert Image to LateX"),
-                                                     ConvertImagesToLatex);
+      Svc.KeyboardHotKey.RegisterHotKey(
+        new HotKey(true,
+                   true,
+                   false,
+                   false,
+                   Key.L,
+                   "LateX: Convert LateX to Image"),
+        ConvertLatexToImages);
+      Svc.KeyboardHotKey.RegisterHotKey(
+        new HotKey(true,
+                   true,
+                   true,
+                   false,
+                   Key.L,
+                   "LateX: Convert Image to LateX"),
+        ConvertImagesToLatex);
     }
 
     #endregion
@@ -123,28 +125,24 @@ namespace SuperMemoAssistant.Plugins.LateX
       catch (Exception) { }
     }
 
-    private bool ConvertLatexToImages()
+    private void ConvertLatexToImages()
     {
       var (texDoc, htmlDoc) = GetDocuments();
 
       if (texDoc == null || htmlDoc == null)
-        return true;
+        return;
 
       htmlDoc.Text = texDoc.ConvertLatexToImages();
-      
-      return true;
     }
 
-    private bool ConvertImagesToLatex()
+    private void ConvertImagesToLatex()
     {
       var (texDoc, htmlDoc) = GetDocuments();
 
       if (texDoc == null || htmlDoc == null)
-        return true;
+        return;
 
       htmlDoc.Text = texDoc.ConvertImagesToLatex();
-      
-      return true;
     }
 
     private (LatexDocument texDoc, IControlHtml ctrlHtml) GetDocuments()
@@ -154,8 +152,8 @@ namespace SuperMemoAssistant.Plugins.LateX
       if (ctrlHtml == null)
         return (null, null);
 
-      int elementId = Svc.SMA.UI.ElementWindow.CurrentElementId;
-      string html = ctrlHtml.Text ?? string.Empty;
+      int    elementId = Svc.SMA.UI.ElementWindow.CurrentElementId;
+      string html      = ctrlHtml.Text ?? string.Empty;
 
       var texDoc = new LatexDocument(Config,
                                      elementId,
