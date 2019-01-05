@@ -81,7 +81,7 @@ namespace SuperMemoAssistant.Plugins.LateX
     {
       LoadConfigOrDefault();
 
-      Svc.SMA.UI.ElementWindow.OnElementChanged += new ActionProxy<SMDisplayedElementChangedArgs>(OnElementChanged);
+      //Svc.SMA.UI.ElementWindow.OnElementChanged += new ActionProxy<SMDisplayedElementChangedArgs>(OnElementChanged);
       Svc.KeyboardHotKey.RegisterHotKey(
         new HotKey(true,
                    true,
