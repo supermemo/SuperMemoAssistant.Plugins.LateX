@@ -22,7 +22,7 @@
 // 
 // 
 // Created On:   2018/05/31 17:47
-// Modified On:  2018/12/15 14:44
+// Modified On:  2019/01/14 19:45
 // Modified By:  Alexis
 
 #endregion
@@ -33,17 +33,51 @@
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using SuperMemoAssistant.Extensions;
+
 // ReSharper disable MemberHidesStaticFromOuterClass
 
-namespace SuperMemoAssistant.Plugins.LateX
+namespace SuperMemoAssistant.Plugins.LaTeX
 {
   public static class LaTeXConst
   {
     #region Constants & Statics
 
-    public static LateXTag FullTag => new LateXTag
+    public static LaTeXCfg Default => new LaTeXCfg
     {
-      LateXBegin = @"\documentclass[12pt]{article}
+      DviGenerationCmd   = LaTeXCommands.LaTeXCmdTemplate,
+      ImageGenerationCmd = LaTeXCommands.DviPngCmdTemplate,
+      Tags = new Dictionary<string, LaTeXTag>
+      {
+        { "Full", LaTeXDocument.FullTag },
+        { "Expression", LaTeXDocument.ExpTag },
+        { "Maths", LaTeXDocument.MathsTag }
+      }
+    };
+
+    #endregion
+
+
+
+
+    public static class LaTeXCommands
+    {
+      #region Constants & Statics
+
+      public static List<string> LaTeXCmdTemplate => new List<string> { "latex", "-interaction=nonstopmode", "{inTex}" };
+      public static List<string> DviPngCmdTemplate => new List<string>
+        { "dvipng", "-D", "200", "-T", "tight", "{inDvi}", "-o", "{outImg}.png" };
+
+      #endregion
+    }
+
+
+    public static class LaTeXDocument
+    {
+      #region Constants & Statics
+
+      public static LaTeXTag FullTag => new LaTeXTag
+      {
+        LaTeXBegin = @"\documentclass[12pt]{article}
 \special{papersize=3in,5in}
 \usepackage[utf8]{inputenc}
 \usepackage{amssymb,amsmath}
@@ -51,14 +85,14 @@ namespace SuperMemoAssistant.Plugins.LateX
 \setlength{\parindent}{0in}
 \begin{document}
 ",
-      LateXEnd = @"
+        LaTeXEnd = @"
 \end{document}",
-      TagBegin = "[latex]",
-      TagEnd   = "[/latex]"
-    };
-    public static LateXTag ExpTag => new LateXTag
-    {
-      LateXBegin = @"\documentclass[12pt]{article}
+        TagBegin = "[latex]",
+        TagEnd   = "[/latex]"
+      };
+      public static LaTeXTag ExpTag => new LaTeXTag
+      {
+        LaTeXBegin = @"\documentclass[12pt]{article}
 \special{papersize=3in,5in}
 \usepackage[utf8]{inputenc}
 \usepackage{amssymb,amsmath}
@@ -67,15 +101,15 @@ namespace SuperMemoAssistant.Plugins.LateX
 \begin{document}
 $
 ",
-      LateXEnd = @"
+        LaTeXEnd = @"
 $
 \end{document}",
-      TagBegin = "[$]",
-      TagEnd   = "[/$]"
-    };
-    public static LateXTag MathsTag => new LateXTag
-    {
-      LateXBegin = @"\documentclass[12pt]{article}
+        TagBegin = "[$]",
+        TagEnd   = "[/$]"
+      };
+      public static LaTeXTag MathsTag => new LaTeXTag
+      {
+        LaTeXBegin = @"\documentclass[12pt]{article}
 \special{papersize=3in,5in}
 \usepackage[utf8]{inputenc}
 \usepackage{amssymb,amsmath}
@@ -84,28 +118,15 @@ $
 \begin{document}
 \begin{displaymath}
 ",
-      LateXEnd = @"
+        LaTeXEnd = @"
 \end{displaymath}
 \end{document}",
-      TagBegin = "[$$]",
-      TagEnd   = "[/$$]"
-    };
+        TagBegin = "[$$]",
+        TagEnd   = "[/$$]"
+      };
 
-    public static LateXCfg Default => new LateXCfg
-    {
-      DviGenerationCmd   = new List<string> { "latex", "-interaction=nonstopmode", "{inTex}" },
-      ImageGenerationCmd = new List<string> { "dvipng", "-D", "200", "-T", "tight", "{inDvi}", "-o", "{outImg}.png" },
-      Tags = new Dictionary<string, LateXTag>
-      {
-        { "Full", FullTag },
-        { "Expression", ExpTag },
-        { "Maths", MathsTag }
-      }
-    };
-
-    #endregion
-
-
+      #endregion
+    }
 
 
     public static class RE
@@ -124,23 +145,22 @@ $
         new Regex("<[^>]+>|&nbsp;",
                   RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
-      public static readonly Regex LatexImage =
-        new Regex(@"<img[^>]+class=""?sma_latex_img""?[^>]*>",
+      public static readonly Regex LaTeXImage =
+        new Regex(@"<img[^>]+class=""?sma-latex-img""?[^>]*>",
                   RegexOptions.Compiled | RegexOptions.IgnoreCase);
-      public static readonly Regex LatexImageFileId =
-        new Regex(@"data-file-id=""?([\d]+)""?",
-                  RegexOptions.Compiled | RegexOptions.IgnoreCase);
-      public static readonly Regex LatexImageFilePath =
-        new Regex(@"src=""file:///([^""]+)""",
+      public static readonly Regex LaTeXImageLaTeXCode =
+        new Regex(@"data-latex-code=""?([^""]+)""?",
                   RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
-      public static readonly Regex LatexError =
+      public static readonly Regex LaTeXError =
         new Regex(
-          "(?:[\\s]*<br[\\s]*/>|<br[\\s]*>)*<div class=\"?sma_latex_error\"?><font color=\"?#ff0000\"?>.*?</font></div>[\\s]*(?:<br[\\s]*/>|<br[\\s]*>){0,2}",
+          "(?:[\\s]*<br[\\s]*/>|<br[\\s]*>)*<div class=\"?sma-latex-error\"?><font color=\"?#ff0000\"?>.*?</font></div>[\\s]*(?:<br[\\s]*/>|<br[\\s]*>){0,2}",
           RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
-      public const string LatexTagOpen  = @"(?:<[\s]*(p|div)[^>]*>)?";
-      public const string LatexTagClose = @"(?:<[\s]*/[\s]*\1[^>]*>)?";
+      public static readonly Regex SvgPxDimension =
+        new Regex(
+          "([\\d]+)px",
+          RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
       #endregion
     }
@@ -149,11 +169,12 @@ $
     {
       #region Constants & Statics
 
-      public const string LatexImage = @"<img class=""sma_latex_img"" data-file-id=""{0}"" src=""file:///{1}"" />";
-      public const string LatexError = "\n<br />\n<br /><div class=\"sma_latex_error\"><font color=\"#ff0000\">{0}</font></div>";
+      public const string LaTeXImagePng =
+        @"<img class=""sma-latex-img"" width=""{0}"" height=""{1}"" style=""background-image:url('data:image/png;base64,{2}'); background-repeat: no-repeat"" data-latex-code=""{3}"" />";
+      public const string LaTeXError = "\n<br />\n<br /><div class=\"sma-latex-error\"><font color=\"#ff0000\">{0}</font></div>";
 
       public const string CSS = @"
-.sma_latex_error {
+.sma-latex-error {
   padding: 15px;
   margin-bottom: 10px;
   border: 1px solid transparent;
@@ -178,15 +199,6 @@ $
         TempFilePath + ".tex";
       public static string TempDviFilePath =>
         TempFilePath + ".dvi";
-
-      #endregion
-    }
-
-    public static class PNG
-    {
-      #region Constants & Statics
-
-      public const string LatexChunkId = "lTEx";
 
       #endregion
     }

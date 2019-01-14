@@ -22,7 +22,7 @@
 // 
 // 
 // Created On:   2018/05/31 19:22
-// Modified On:  2018/06/03 01:33
+// Modified On:  2019/01/14 21:26
 // Modified By:  Alexis
 
 #endregion
@@ -31,23 +31,90 @@
 
 
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 using System.Text.RegularExpressions;
+using Forge.Forms.Annotations;
 using Newtonsoft.Json;
+using SuperMemoAssistant.Sys.ComponentModel;
+// ReSharper disable UnassignedGetOnlyAutoProperty
 
-namespace SuperMemoAssistant.Plugins.LateX
+namespace SuperMemoAssistant.Plugins.LaTeX
 {
-  public class LateXCfg
+  [Form(Mode = DefaultFields.None)]
+  [Title("Settings",
+    IsVisible = "{Env DialogHostContext}")]
+  [DialogAction("cancel",
+    "Cancel",
+    IsCancel = true)]
+  [DialogAction("save",
+    "Save",
+    IsDefault = true,
+    Validates = true)]
+  public class LaTeXCfg : INotifyPropertyChangedEx
   {
+    #region Properties & Fields - Non-Public
+
+    [JsonIgnore] private Dictionary<Regex, LaTeXTag> _filters = null;
+
+    #endregion
+
+
+
+
     #region Properties & Fields - Public
-    
+
     [JsonIgnore]
-    private Dictionary<Regex, LateXTag> _filters = null;
-    [JsonIgnore]
-    public Dictionary<Regex, LateXTag> Filters => _filters ?? (_filters = GenerateTagsRegex());
+    public Dictionary<Regex, LaTeXTag> Filters => _filters ?? GenerateTagsRegex();
 
     public List<string>                 DviGenerationCmd   { get; set; }
     public List<string>                 ImageGenerationCmd { get; set; }
-    public Dictionary<string, LateXTag> Tags               { get; set; }
+    public Dictionary<string, LaTeXTag> Tags               { get; set; }
+    
+    [JsonIgnore]
+    [Field(Name = "(Step 1) DVI Generation command line")]
+    public string DviGenerationCmdConfig
+    {
+      get => string.Join("\n",
+                         DviGenerationCmd);
+      set => DviGenerationCmd = value.Replace("\r\n",
+                                              "\n").Split('\n').ToList();
+    }
+
+    [JsonIgnore]
+    [Field(Name = "(Step 2) Image Generation command line")]
+    public string ImageGenerationCmdConfig
+    {
+      get => string.Join("\n",
+                         ImageGenerationCmd);
+      set => ImageGenerationCmd = value.Replace("\r\n",
+                                                "\n").Split('\n').ToList();
+    }
+
+    [Field(Name = "(Step 3) HTML LaTeX <img> tag")]
+    public string LaTeXImageTag { get; set; } = LaTeXConst.Html.LaTeXImagePng;
+
+    #endregion
+
+
+
+
+    #region Properties Impl - Public
+
+    [JsonIgnore]
+    public bool IsChanged { get; }
+
+    #endregion
+
+
+
+
+    #region Methods Impl
+
+    public override string ToString()
+    {
+      return "LaTeX";
+    }
 
     #endregion
 
@@ -63,19 +130,29 @@ namespace SuperMemoAssistant.Plugins.LateX
         && ImageGenerationCmd != null && ImageGenerationCmd.Count > 0;
     }
 
-    private Dictionary<Regex, LateXTag> GenerateTagsRegex()
+    public Dictionary<Regex, LaTeXTag> GenerateTagsRegex()
     {
-      Dictionary<Regex, LateXTag> ret = new Dictionary<Regex, LateXTag>();
+      Dictionary<Regex, LaTeXTag> ret = new Dictionary<Regex, LaTeXTag>();
 
       foreach (var tag in Tags.Values)
       {
         string escaped = Regex.Escape(tag.TagBegin) + "(.+?)" + Regex.Escape(tag.TagEnd);
 
-        ret[new Regex(escaped, RegexOptions.Compiled | RegexOptions.IgnoreCase)] = tag;
+        ret[new Regex(escaped,
+                      RegexOptions.Compiled | RegexOptions.IgnoreCase)] = tag;
       }
 
-      return ret;
+      return _filters = ret;
     }
+
+    #endregion
+
+
+
+
+    #region Events
+
+    public event PropertyChangedEventHandler PropertyChanged;
 
     #endregion
   }

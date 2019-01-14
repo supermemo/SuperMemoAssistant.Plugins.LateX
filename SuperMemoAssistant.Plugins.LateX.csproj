@@ -10,8 +10,8 @@
     <ProjectGuid>{CD2988DA-B610-40AD-995A-AA5A28FBBBFE}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SuperMemoAssistant.Plugins.LateX</RootNamespace>
-    <AssemblyName>SuperMemoAssistant.Plugins.LateX</AssemblyName>
+    <RootNamespace>SuperMemoAssistant.Plugins.LaTeX</RootNamespace>
+    <AssemblyName>SuperMemoAssistant.Plugins.LaTeX</AssemblyName>
     <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AssemblyVersion>0.1.130</AssemblyVersion>
@@ -96,6 +96,7 @@
     </Reference>
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Reflection.Metadata, Version=1.4.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\System.Reflection.Metadata.1.6.0\lib\netstandard2.0\System.Reflection.Metadata.dll</HintPath>
     </Reference>
@@ -113,14 +114,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="LaTeXConst.cs" />
-    <Compile Include="LatexDocument.cs" />
-    <Compile Include="LateXCfg.cs" />
-    <Compile Include="LateXPlugin.cs" />
-    <Compile Include="LateXTag.cs" />
-    <Compile Include="LateXUtils.cs" />
+    <Compile Include="LaTexDocument.cs" />
+    <Compile Include="LaTeXCfg.cs" />
+    <Compile Include="LaTeXPlugin.cs" />
+    <Compile Include="LaTeXTag.cs" />
+    <Compile Include="LaTeXUtils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\libs\Forge.Forms\Forge.Forms\src\Forge.Forms\Forge.Forms.csproj">
+      <Project>{4e0c323d-5afc-4105-815f-587346aa5321}</Project>
+      <Name>Forge.Forms</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Services\SuperMemoAssistant.Services.Medias.Images\SuperMemoAssistant.Services.Medias.Images.csproj">
       <Project>{677647e4-f052-41d0-915a-ad76da72463e}</Project>
       <Name>SuperMemoAssistant.Services.Medias.Images</Name>

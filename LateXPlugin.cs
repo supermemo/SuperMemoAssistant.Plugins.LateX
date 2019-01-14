@@ -22,7 +22,7 @@
 // 
 // 
 // Created On:   2018/05/30 17:20
-// Modified On:  2018/12/31 00:56
+// Modified On:  2019/01/14 21:12
 // Modified By:  Alexis
 
 #endregion
@@ -30,25 +30,24 @@
 
 
 
-using System;
+using System.Collections.Generic;
 using System.Windows.Input;
 using SuperMemoAssistant.Extensions;
 using SuperMemoAssistant.Interop.Plugins;
 using SuperMemoAssistant.Interop.SuperMemo.Components.Controls;
-using SuperMemoAssistant.Interop.SuperMemo.Core;
 using SuperMemoAssistant.Services;
-using SuperMemoAssistant.Sys;
+using SuperMemoAssistant.Sys.ComponentModel;
 using SuperMemoAssistant.Sys.IO.Devices;
 
-namespace SuperMemoAssistant.Plugins.LateX
+namespace SuperMemoAssistant.Plugins.LaTeX
 {
   // ReSharper disable once UnusedMember.Global
   // ReSharper disable once ClassNeverInstantiated.Global
-  public class LateXPlugin : SMAPluginBase<LateXPlugin>
+  public class LaTeXPlugin : SMAPluginBase<LaTeXPlugin>
   {
     #region Constructors
 
-    public LateXPlugin() { }
+    public LaTeXPlugin() { }
 
     #endregion
 
@@ -57,7 +56,7 @@ namespace SuperMemoAssistant.Plugins.LateX
 
     #region Properties & Fields - Public
 
-    public LateXCfg Config { get; set; }
+    public LaTeXCfg Config { get; set; }
 
     #endregion
 
@@ -80,24 +79,35 @@ namespace SuperMemoAssistant.Plugins.LateX
     protected override void OnInit()
     {
       LoadConfigOrDefault();
+      SettingsModels = new List<INotifyPropertyChangedEx>
+      {
+        Config
+      };
 
-      //Svc.SMA.UI.ElementWindow.OnElementChanged += new ActionProxy<SMDisplayedElementChangedArgs>(OnElementChanged);
       Svc.KeyboardHotKey.RegisterHotKey(
         new HotKey(true,
                    true,
                    false,
                    false,
                    Key.L,
-                   "LateX: Convert LateX to Image"),
-        ConvertLatexToImages);
+                   "LaTeX: Convert LaTeX to Image"),
+        ConvertLaTeXToImages);
       Svc.KeyboardHotKey.RegisterHotKey(
         new HotKey(true,
                    true,
                    true,
                    false,
                    Key.L,
-                   "LateX: Convert Image to LateX"),
-        ConvertImagesToLatex);
+                   "LaTeX: Convert Image to LaTeX"),
+        ConvertImagesToLaTeX);
+    }
+
+
+    public override void SettingsSaved(object _)
+    {
+      Svc<LaTeXPlugin>.Configuration.Save<LaTeXCfg>(Config).Wait();
+
+      Config.GenerateTagsRegex();
     }
 
     #endregion
@@ -107,56 +117,36 @@ namespace SuperMemoAssistant.Plugins.LateX
 
     #region Methods
 
-    // TODO: Check exception if element changed inbetween
-    public void OnElementChanged(SMDisplayedElementChangedArgs e)
-    {
-      try
-      {
-        return;
-
-        // TODO: Improve pruning
-        var (texDoc, htmlDoc) = GetDocuments();
-
-        if (texDoc == null || htmlDoc == null)
-          return;
-
-        texDoc.PruneOrphanImages();
-      }
-      catch (Exception) { }
-    }
-
-    private void ConvertLatexToImages()
+    private void ConvertLaTeXToImages()
     {
       var (texDoc, htmlDoc) = GetDocuments();
 
       if (texDoc == null || htmlDoc == null)
         return;
 
-      htmlDoc.Text = texDoc.ConvertLatexToImages();
+      htmlDoc.Text = texDoc.ConvertLaTeXToImages();
     }
 
-    private void ConvertImagesToLatex()
+    private void ConvertImagesToLaTeX()
     {
       var (texDoc, htmlDoc) = GetDocuments();
 
       if (texDoc == null || htmlDoc == null)
         return;
 
-      htmlDoc.Text = texDoc.ConvertImagesToLatex();
+      htmlDoc.Text = texDoc.ConvertImagesToLaTeX();
     }
 
-    private (LatexDocument texDoc, IControlHtml ctrlHtml) GetDocuments()
+    private (LaTeXDocument texDoc, IControlHtml ctrlHtml) GetDocuments()
     {
       IControlHtml ctrlHtml = Svc.SMA.UI.ElementWindow.ControlGroup.FocusedControl.AsHtml();
 
       if (ctrlHtml == null)
         return (null, null);
 
-      int    elementId = Svc.SMA.UI.ElementWindow.CurrentElementId;
-      string html      = ctrlHtml.Text ?? string.Empty;
+      string html = ctrlHtml.Text ?? string.Empty;
 
-      var texDoc = new LatexDocument(Config,
-                                     elementId,
+      var texDoc = new LaTeXDocument(Config,
                                      html);
 
       return (texDoc, ctrlHtml);
@@ -164,13 +154,13 @@ namespace SuperMemoAssistant.Plugins.LateX
 
     private void LoadConfigOrDefault()
     {
-      Config = Svc<LateXPlugin>.Configuration.Load<LateXCfg>().Result;
+      Config = Svc<LaTeXPlugin>.Configuration.Load<LaTeXCfg>().Result;
 
       if (Config == null || Config.IsValid() == false)
       {
         Config = LaTeXConst.Default;
 
-        Svc<LateXPlugin>.Configuration.Save(Config);
+        Svc<LaTeXPlugin>.Configuration.Save(Config);
       }
     }
 

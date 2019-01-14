@@ -37,9 +37,9 @@ using System.Linq;
 using System.Web;
 using SuperMemoAssistant.Extensions;
 
-namespace SuperMemoAssistant.Plugins.LateX
+namespace SuperMemoAssistant.Plugins.LaTeX
 {
-  public static class LateXUtils
+  public static class LaTeXUtils
   {
     #region Methods
 
@@ -63,7 +63,7 @@ namespace SuperMemoAssistant.Plugins.LateX
       return text;
     }
 
-    public static string HtmlToLateX(string html)
+    public static string PlainText(string html)
     {
       html = LaTeXConst.RE.Br.Replace(html,
                                  "\\n");
@@ -77,7 +77,7 @@ namespace SuperMemoAssistant.Plugins.LateX
       return html.Trim();
     }
 
-    public static string FixPlaceHolders(string arg)
+    public static string GetPlaceholderValue(string arg)
     {
       switch (arg)
       {
@@ -95,9 +95,9 @@ namespace SuperMemoAssistant.Plugins.LateX
       }
     }
 
-    public static (bool success, string pathOrError) GenerateImgFile(LateXCfg config)
+    public static (bool success, string pathOrError) GenerateImgFile(LaTeXCfg config)
     {
-      string imgFilePath = FixPlaceHolders(config.ImageGenerationCmd.Last());
+      string imgFilePath = GetPlaceholderValue(config.ImageGenerationCmd.Last());
 
       if (File.Exists(imgFilePath))
         File.Delete(imgFilePath);
@@ -107,8 +107,8 @@ namespace SuperMemoAssistant.Plugins.LateX
       return (success, success ? imgFilePath : output);
     }
 
-    public static (bool success, string pathOrError) GenerateDviFile(LateXCfg config,
-                                                                     LateXTag tag,
+    public static (bool success, string pathOrError) GenerateDviFile(LaTeXCfg config,
+                                                                     LaTeXTag tag,
                                                                      string   latexContent)
     {
       if (File.Exists(LaTeXConst.Paths.TempTexFilePath))
@@ -117,7 +117,7 @@ namespace SuperMemoAssistant.Plugins.LateX
       if (File.Exists(LaTeXConst.Paths.TempDviFilePath))
         File.Delete(LaTeXConst.Paths.TempDviFilePath);
 
-      latexContent = tag.LateXBegin + latexContent + tag.LateXEnd;
+      latexContent = tag.LaTeXBegin + latexContent + tag.LaTeXEnd;
 
       File.WriteAllText(LaTeXConst.Paths.TempTexFilePath,
                         latexContent);
@@ -129,7 +129,7 @@ namespace SuperMemoAssistant.Plugins.LateX
     public static (bool success, string output) Execute(List<string> fullCmd)
     {
       var bin  = fullCmd[0];
-      var args = fullCmd.Skip(1).Select(FixPlaceHolders);
+      var args = fullCmd.Skip(1).Select(GetPlaceholderValue);
 
       var p = ProcessEx.CreateBackgroundProcess(bin,
                                                 String.Join(" ",

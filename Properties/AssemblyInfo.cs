@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("SuperMemoAssistant.Plugins.LateX")]
+[assembly: AssemblyTitle("SuperMemoAssistant.Plugins.LaTeX")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("SuperMemoAssistant.Plugins.LateX")]
+[assembly: AssemblyProduct("SuperMemoAssistant.Plugins.LaTeX")]
 [assembly: AssemblyCopyright("Copyright ©  2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

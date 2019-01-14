@@ -25,14 +25,14 @@
 // Modified By:  Alexis
 #endregion
 
-namespace SuperMemoAssistant.Plugins.LateX
+namespace SuperMemoAssistant.Plugins.LaTeX
 {
-  public class LateXTag
+  public class LaTeXTag
   {
     public string TagBegin { get; set; }
     public string TagEnd { get; set; }
-    public string LateXBegin { get; set; }
-    public string LateXEnd { get; set; }
+    public string LaTeXBegin { get; set; }
+    public string LaTeXEnd { get; set; }
 
     public string SurroundTexWith(string tex)
     {

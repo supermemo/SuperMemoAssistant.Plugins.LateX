@@ -22,7 +22,7 @@
 // 
 // 
 // Created On:   2018/06/02 22:15
-// Modified On:  2018/10/26 22:41
+// Modified On:  2019/01/14 21:09
 // Modified By:  Alexis
 
 #endregion
@@ -32,25 +32,21 @@
 
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
+using System.Xml.Linq;
 using JetBrains.Annotations;
 using SuperMemoAssistant.Extensions;
-using SuperMemoAssistant.Interop.Plugins;
-using SuperMemoAssistant.Services;
-using SuperMemoAssistant.Services.Medias.Images;
-using SuperMemoAssistant.Sys.IO.FS;
 
-namespace SuperMemoAssistant.Plugins.LateX
+namespace SuperMemoAssistant.Plugins.LaTeX
 {
-  public class LatexDocument
+  public class LaTeXDocument
   {
     #region Properties & Fields - Non-Public
 
-    private LateXCfg Config    { get; }
-    private int      ElementId { get; }
+    private LaTeXCfg Config    { get; }
     private string   Selection { get; set; }
     private string   Html      { get; set; }
 
@@ -61,14 +57,12 @@ namespace SuperMemoAssistant.Plugins.LateX
 
     #region Constructors
 
-    public LatexDocument(
-      [NotNull] LateXCfg   config,
-      int                  elementId,
-      [NotNull] string     html,
-      string               selection = null)
+    public LaTeXDocument(
+      [NotNull] LaTeXCfg config,
+      [NotNull] string   html,
+      string             selection = null)
     {
       Config    = config;
-      ElementId = elementId;
       Html      = html;
       Selection = selection ?? html;
     }
@@ -80,29 +74,14 @@ namespace SuperMemoAssistant.Plugins.LateX
 
     #region Methods
 
-    public void PruneOrphanImages()
-    {
-      var usedFSIds = GetAllImages().Select(i => i.fileId);
-      var allFSIds = Svc<LateXPlugin>.CollectionFS.ForElementWithPlugin(ElementId);
-
-      foreach (var idToRm in allFSIds.Select(f => f.Id).Except(usedFSIds))
-        Svc<LateXPlugin>.CollectionFS.DeleteById(idToRm);
-    }
-
-    public string ConvertImagesToLatex()
+    public string ConvertImagesToLaTeX()
     {
       var newSelection  = Selection.Clone() as string;
-      var allImagesData = GetAllImages();
+      var allImagesData = GetAllImagesLaTeXCode();
 
-      foreach (var (html, fileId, filePath) in allImagesData)
-      {
-        var texBytes = PngChunkService.ReadCustomChunk(filePath,
-                                                       LaTeXConst.PNG.LatexChunkId);
-        var tex = Encoding.UTF8.GetString(texBytes);
-
+      foreach (var (html, latex) in allImagesData)
         newSelection = newSelection.ReplaceFirst(html,
-                                                 tex);
-      }
+                                                 latex.FromBase64());
 
       Html = Html.Replace(Selection,
                           newSelection);
@@ -111,10 +90,10 @@ namespace SuperMemoAssistant.Plugins.LateX
       return Html;
     }
 
-    public string ConvertLatexToImages()
+    public string ConvertLaTeXToImages()
     {
-      string newSelection = LaTeXConst.RE.LatexError.Replace(Selection,
-                                                        string.Empty);
+      string newSelection = LaTeXConst.RE.LaTeXError.Replace(Selection,
+                                                             string.Empty);
       var filters = Config.Filters;
 
       var allTaggedMatches = filters.Select(
@@ -123,13 +102,13 @@ namespace SuperMemoAssistant.Plugins.LateX
 
       foreach (var taggedMatches in allTaggedMatches)
       {
-        Dictionary<string, int> itemsOccurences = new Dictionary<string, int>();
+        var itemsOccurences  = new Dictionary<string, int>();
         var processedMatches = GenerateImages(taggedMatches.Item1,
                                               taggedMatches.Item2);
 
         foreach (var processedMatch in processedMatches)
         {
-          var (success, imgFilePathOrError, fullHtml) = processedMatch;
+          var (success, imgFilePathOrError, latexCode, fullHtml) = processedMatch;
 
           int nb = itemsOccurences.SafeGet(fullHtml,
                                            0) + 1;
@@ -138,13 +117,10 @@ namespace SuperMemoAssistant.Plugins.LateX
           if (success)
             try
             {
-              var colFile = CopyImageToCollectionFS(imgFilePathOrError);
-
-              if (colFile == null)
-                throw new InvalidOperationException("Unable to write generated image file to Collection FileSystem");
-
+              var imgHtml = GenerateImgHtml(imgFilePathOrError,
+                                            taggedMatches.Item1.SurroundTexWith(latexCode));
               newSelection = newSelection.ReplaceNth(fullHtml,
-                                                     GenerateImgHtml(colFile),
+                                                     imgHtml,
                                                      nb);
             }
             catch (Exception ex)
@@ -158,8 +134,6 @@ namespace SuperMemoAssistant.Plugins.LateX
                                                    GenerateErrorHtml(fullHtml,
                                                                      imgFilePathOrError),
                                                    nb);
-
-          nb++;
         }
       }
 
@@ -167,107 +141,132 @@ namespace SuperMemoAssistant.Plugins.LateX
                           newSelection);
       Selection = newSelection;
 
-      PruneOrphanImages();
-
       return Html;
     }
 
-    private string GenerateImgHtml(CollectionFile colFile)
+    private string GenerateImgHtml(string filePath,
+                                   string latexCode)
     {
-      return String.Format(LaTeXConst.Html.LatexImage,
-                           colFile.Id,
-                           colFile.Path);
+      if (File.Exists(filePath) == false)
+        throw new ArgumentException($"File \"{filePath}\" does not exist.");
+
+      string base64Img;
+
+      using (var fileStream = File.OpenRead(filePath))
+        base64Img = fileStream.ToBase64();
+
+      var size = GetImageSize(filePath);
+
+      return string.Format(Config.LaTeXImageTag,
+                           size.Width,
+                           size.Height,
+                           base64Img,
+                           latexCode.ToBase64());
+    }
+
+    private Size GetImageSize(string filePath)
+    {
+      try
+      {
+        using (var img = Image.FromFile(filePath))
+          return img.Size;
+      }
+      catch
+      {
+        // Ignore
+      }
+
+      return GetSvgSize(filePath);
+    }
+
+    private Size GetSvgSize(string filePath)
+    {
+      XDocument doc = XDocument.Load(filePath);
+      
+      if (doc == null)
+        throw new ArgumentException($"Output format unsupported \"{filePath}\".");
+
+      var svg = doc.Element("svg");
+
+      if (svg == null)
+        throw new ArgumentException($"Output format unsupported \"{filePath}\". Can't find 'svg' element.");
+
+      var widthStr  = svg.Attribute("width")?.Value;
+      var heightStr = svg.Attribute("height")?.Value;
+
+      if (widthStr == null || heightStr == null)
+        throw new ArgumentException($"Output format unsupported \"{filePath}\". Can't find 'width' and 'height' attributes.");
+
+      var widthRegexRes  = LaTeXConst.RE.SvgPxDimension.Match(widthStr);
+      var heightRegexRes = LaTeXConst.RE.SvgPxDimension.Match(heightStr);
+
+      if (widthRegexRes.Success == false || heightRegexRes.Success == false)
+        throw new ArgumentException(
+          $"Output format unsupported \"{filePath}\". Unknown format for 'width' and 'height' attributes -- should be in '[\\d]+px' format.");
+
+      return new Size(int.Parse(widthRegexRes.Groups[1].Value),
+                      int.Parse(heightRegexRes.Groups[1].Value));
     }
 
     private string GenerateErrorHtml(string html,
                                      string error)
     {
-      error = LateXUtils.TextToHtml(error ?? string.Empty);
+      error = LaTeXUtils.TextToHtml(error ?? string.Empty);
 
-      return html + string.Format(LaTeXConst.Html.LatexError,
+      return html + string.Format(LaTeXConst.Html.LaTeXError,
                                   error);
     }
 
-    private CollectionFile CopyImageToCollectionFS(string imgFilePath)
-    {
-      void StreamCopier(Stream outStream)
-      {
-        using (var inStream = File.OpenRead(imgFilePath))
-          inStream.CopyTo(outStream);
-      }
-
-      string imgFileCrc32 = FileEx.GetCrc32(imgFilePath);
-
-      return Svc<LateXPlugin>.CollectionFS.Create(ElementId,
-                                                  StreamCopier,
-                                                  ".png",
-                                                  imgFileCrc32);
-    }
-
-    private IEnumerable<(bool success, string imgFilePathOrError, string fullHtml)> GenerateImages(
-      LateXTag        tag,
+    private IEnumerable<(bool success, string imgFilePathOrError, string latexCode, string originalHtml)> GenerateImages(
+      LaTeXTag        tag,
       MatchCollection matches)
     {
-      List<(bool, string, string)> ret = new List<(bool, string, string)>();
+      List<(bool, string, string, string)> ret = new List<(bool, string, string, string)>();
 
       foreach (Match match in matches)
       {
-        string fullHtml = match.Groups[0].Value;
-        string texHtml  = match.Groups[1].Value;
+        string originalHtml = match.Groups[0].Value;
+        string latexCode    = match.Groups[1].Value;
 
         try
         {
-          string latex = LateXUtils.HtmlToLateX(texHtml);
+          latexCode = LaTeXUtils.PlainText(latexCode);
 
-          var (success, pathOrError) = LateXUtils.GenerateDviFile(Config,
+          var (success, pathOrError) = LaTeXUtils.GenerateDviFile(Config,
                                                                   tag,
-                                                                  latex);
+                                                                  latexCode);
 
           if (success == false)
           {
-            ret.Add((false, pathOrError, fullHtml));
+            ret.Add((false, pathOrError, null, originalHtml));
             continue;
           }
 
-          (success, pathOrError) = LateXUtils.GenerateImgFile(Config);
+          (success, pathOrError) = LaTeXUtils.GenerateImgFile(Config);
 
-          if (success)
-            PngChunkService.WriteCustomChunk(
-              pathOrError,
-              null,
-              LaTeXConst.PNG.LatexChunkId,
-              Encoding.UTF8.GetBytes(tag.SurroundTexWith(latex))
-            );
-
-          ret.Add((success, pathOrError, fullHtml));
+          ret.Add((success, pathOrError, latexCode, originalHtml));
         }
         catch (Exception ex)
         {
-          ret.Add((false, ex.Message, fullHtml));
+          ret.Add((false, ex.Message, null, originalHtml));
         }
       }
 
       return ret;
     }
 
-    private HashSet<(string html, int fileId, string filePath)> GetAllImages()
+    private HashSet<(string html, string latex)> GetAllImagesLaTeXCode()
     {
-      HashSet<(string, int, string)> ret     = new HashSet<(string, int, string)>();
-      var                            matches = LaTeXConst.RE.LatexImage.Matches(Selection);
+      HashSet<(string, string)> ret     = new HashSet<(string, string)>();
+      var                       matches = LaTeXConst.RE.LaTeXImage.Matches(Selection);
 
       foreach (Match imgMatch in matches)
       {
-        var html          = imgMatch.Groups[0].Value;
-        var fileIdMatch   = LaTeXConst.RE.LatexImageFileId.Match(html);
-        var filePathMatch = LaTeXConst.RE.LatexImageFilePath.Match(html);
+        var html      = imgMatch.Groups[0].Value;
+        var latexCode = LaTeXConst.RE.LaTeXImageLaTeXCode.Match(html);
 
-        if (fileIdMatch.Success && filePathMatch.Success)
-        {
-          int    fileId   = int.Parse(fileIdMatch.Groups[1].Value);
-          string filePath = filePathMatch.Groups[1].Value;
-
-          ret.Add((html, fileId, filePath));
-        }
+        if (latexCode.Success)
+          ret.Add((html, latexCode.Groups[1].Value));
       }
 
       return ret;
