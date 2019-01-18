@@ -34,7 +34,7 @@ using System.Collections.Generic;
 using System.Windows.Input;
 using SuperMemoAssistant.Extensions;
 using SuperMemoAssistant.Interop.Plugins;
-using SuperMemoAssistant.Interop.SuperMemo.Components.Controls;
+using SuperMemoAssistant.Interop.SuperMemo.Content.Controls;
 using SuperMemoAssistant.Services;
 using SuperMemoAssistant.Sys.ComponentModel;
 using SuperMemoAssistant.Sys.IO.Devices;

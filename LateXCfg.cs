@@ -102,7 +102,7 @@ namespace SuperMemoAssistant.Plugins.LaTeX
     #region Properties Impl - Public
 
     [JsonIgnore]
-    public bool IsChanged { get; }
+    public bool IsChanged { get; set; }
 
     #endregion
 
