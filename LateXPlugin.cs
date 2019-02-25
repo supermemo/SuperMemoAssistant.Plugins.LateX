@@ -22,7 +22,7 @@
 // 
 // 
 // Created On:   2018/05/30 17:20
-// Modified On:  2019/01/14 21:12
+// Modified On:  2019/02/25 17:45
 // Modified By:  Alexis
 
 #endregion
@@ -30,20 +30,18 @@
 
 
 
-using System.Collections.Generic;
 using System.Windows.Input;
 using SuperMemoAssistant.Extensions;
-using SuperMemoAssistant.Interop.Plugins;
 using SuperMemoAssistant.Interop.SuperMemo.Content.Controls;
 using SuperMemoAssistant.Services;
-using SuperMemoAssistant.Sys.ComponentModel;
+using SuperMemoAssistant.Services.Sentry;
 using SuperMemoAssistant.Sys.IO.Devices;
 
 namespace SuperMemoAssistant.Plugins.LaTeX
 {
   // ReSharper disable once UnusedMember.Global
   // ReSharper disable once ClassNeverInstantiated.Global
-  public class LaTeXPlugin : SMAPluginBase<LaTeXPlugin>
+  public class LaTeXPlugin : SentrySMAPluginBase<LaTeXPlugin>
   {
     #region Constructors
 
@@ -76,13 +74,13 @@ namespace SuperMemoAssistant.Plugins.LaTeX
     #region Methods Impl
 
     /// <inheritdoc />
-    protected override void OnInit()
+    protected override void PluginInit()
     {
       LoadConfigOrDefault();
-      SettingsModels = new List<INotifyPropertyChangedEx>
-      {
-        Config
-      };
+      //SettingsModels = new List<INotifyPropertyChangedEx>
+      //{
+      //  Config
+      //};
 
       Svc.KeyboardHotKey.RegisterHotKey(
         new HotKey(true,
@@ -100,14 +98,6 @@ namespace SuperMemoAssistant.Plugins.LaTeX
                    Key.L,
                    "LaTeX: Convert Image to LaTeX"),
         ConvertImagesToLaTeX);
-    }
-
-
-    public override void SettingsSaved(object _)
-    {
-      Svc<LaTeXPlugin>.Configuration.Save<LaTeXCfg>(Config).Wait();
-
-      Config.GenerateTagsRegex();
     }
 
     #endregion
@@ -154,16 +144,26 @@ namespace SuperMemoAssistant.Plugins.LaTeX
 
     private void LoadConfigOrDefault()
     {
-      Config = Svc<LaTeXPlugin>.Configuration.Load<LaTeXCfg>().Result;
+      Config = Svc.Configuration.Load<LaTeXCfg>().Result;
 
       if (Config == null || Config.IsValid() == false)
       {
         Config = LaTeXConst.Default;
 
-        Svc<LaTeXPlugin>.Configuration.Save(Config);
+        Svc.Configuration.Save(Config).ConfigureAwait(false);
       }
     }
 
     #endregion
+
+
+
+
+    //public override void SettingsSaved(object _)
+    //{
+    //  Svc.Configuration.Save<LaTeXCfg>(Config).Wait();
+
+    //  Config.GenerateTagsRegex();
+    //}
   }
 }

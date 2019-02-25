@@ -22,7 +22,7 @@
 // 
 // 
 // Created On:   2018/05/31 19:22
-// Modified On:  2019/01/14 21:26
+// Modified On:  2019/02/23 23:19
 // Modified By:  Alexis
 
 #endregion
@@ -37,6 +37,7 @@ using System.Text.RegularExpressions;
 using Forge.Forms.Annotations;
 using Newtonsoft.Json;
 using SuperMemoAssistant.Sys.ComponentModel;
+
 // ReSharper disable UnassignedGetOnlyAutoProperty
 
 namespace SuperMemoAssistant.Plugins.LaTeX
@@ -70,7 +71,7 @@ namespace SuperMemoAssistant.Plugins.LaTeX
     public List<string>                 DviGenerationCmd   { get; set; }
     public List<string>                 ImageGenerationCmd { get; set; }
     public Dictionary<string, LaTeXTag> Tags               { get; set; }
-    
+
     [JsonIgnore]
     [Field(Name = "(Step 1) DVI Generation command line")]
     public string DviGenerationCmdConfig
