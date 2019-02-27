@@ -43,7 +43,7 @@ using SuperMemoAssistant.Sys.ComponentModel;
 namespace SuperMemoAssistant.Plugins.LaTeX
 {
   [Form(Mode = DefaultFields.None)]
-  [Title("Settings",
+  [Title("LaTeX Settings",
     IsVisible = "{Env DialogHostContext}")]
   [DialogAction("cancel",
     "Cancel",

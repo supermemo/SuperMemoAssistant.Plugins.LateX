@@ -22,7 +22,7 @@
 // 
 // 
 // Created On:   2018/05/30 17:20
-// Modified On:  2019/02/25 17:45
+// Modified On:  2019/02/26 02:29
 // Modified By:  Alexis
 
 #endregion
@@ -30,6 +30,7 @@
 
 
 
+using System.Windows;
 using System.Windows.Input;
 using SuperMemoAssistant.Extensions;
 using SuperMemoAssistant.Interop.SuperMemo.Content.Controls;
@@ -65,6 +66,8 @@ namespace SuperMemoAssistant.Plugins.LaTeX
 
     /// <inheritdoc />
     public override string Name => "LaTeX";
+    
+    public override bool HasSettings => true;
 
     #endregion
 
@@ -98,6 +101,23 @@ namespace SuperMemoAssistant.Plugins.LaTeX
                    Key.L,
                    "LaTeX: Convert Image to LaTeX"),
         ConvertImagesToLaTeX);
+    }
+    
+    public override void ShowSettings()
+    {
+      Application.Current.Dispatcher.Invoke(
+        () =>
+        {
+          Forge.Forms.Show.Window(500).For<LaTeXCfg>(Config).Wait();
+
+          if (Config.IsChanged)
+          {
+            Svc.Configuration.Save<LaTeXCfg>(Config).Wait();
+            Config.IsChanged = false;
+            Config.GenerateTagsRegex();
+          }
+        }
+      );
     }
 
     #endregion
@@ -155,15 +175,5 @@ namespace SuperMemoAssistant.Plugins.LaTeX
     }
 
     #endregion
-
-
-
-
-    //public override void SettingsSaved(object _)
-    //{
-    //  Svc.Configuration.Save<LaTeXCfg>(Config).Wait();
-
-    //  Config.GenerateTagsRegex();
-    //}
   }
 }
