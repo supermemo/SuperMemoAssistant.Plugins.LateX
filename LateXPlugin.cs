@@ -22,7 +22,7 @@
 // 
 // 
 // Created On:   2018/05/30 17:20
-// Modified On:  2019/02/26 02:29
+// Modified On:  2019/02/28 20:52
 // Modified By:  Alexis
 
 #endregion
@@ -35,7 +35,9 @@ using System.Windows.Input;
 using SuperMemoAssistant.Extensions;
 using SuperMemoAssistant.Interop.SuperMemo.Content.Controls;
 using SuperMemoAssistant.Services;
+using SuperMemoAssistant.Services.IO.HotKeys;
 using SuperMemoAssistant.Services.Sentry;
+using SuperMemoAssistant.Services.UI.Configuration;
 using SuperMemoAssistant.Sys.IO.Devices;
 
 namespace SuperMemoAssistant.Plugins.LaTeX
@@ -66,7 +68,7 @@ namespace SuperMemoAssistant.Plugins.LaTeX
 
     /// <inheritdoc />
     public override string Name => "LaTeX";
-    
+
     public override bool HasSettings => true;
 
     #endregion
@@ -85,38 +87,26 @@ namespace SuperMemoAssistant.Plugins.LaTeX
       //  Config
       //};
 
-      Svc.KeyboardHotKey.RegisterHotKey(
-        new HotKey(true,
-                   true,
-                   false,
-                   false,
-                   Key.L,
-                   "LaTeX: Convert LaTeX to Image"),
-        ConvertLaTeXToImages);
-      Svc.KeyboardHotKey.RegisterHotKey(
-        new HotKey(true,
-                   true,
-                   true,
-                   false,
-                   Key.L,
-                   "LaTeX: Convert Image to LaTeX"),
-        ConvertImagesToLaTeX);
+      Svc.HotKeyManager
+         .RegisterGlobal(
+           "LaTeXToImage",
+           "Convert LaTeX to Image",
+           new HotKey(Key.L, KeyModifiers.CtrlAlt),
+           ConvertLaTeXToImage
+         )
+         .RegisterGlobal(
+           "ImageToLaTeX",
+           "Convert Image to LaTeX",
+           new HotKey(Key.L, KeyModifiers.CtrlAltShift),
+           ConvertImageToLaTeX
+         );
     }
     
+    /// <inheritdoc />
     public override void ShowSettings()
     {
       Application.Current.Dispatcher.Invoke(
-        () =>
-        {
-          Forge.Forms.Show.Window(500).For<LaTeXCfg>(Config).Wait();
-
-          if (Config.IsChanged)
-          {
-            Svc.Configuration.Save<LaTeXCfg>(Config).Wait();
-            Config.IsChanged = false;
-            Config.GenerateTagsRegex();
-          }
-        }
+        () => new ConfigurationWindow(HotKeyManager.Instance, Config).ShowAndActivate()
       );
     }
 
@@ -127,7 +117,7 @@ namespace SuperMemoAssistant.Plugins.LaTeX
 
     #region Methods
 
-    private void ConvertLaTeXToImages()
+    private void ConvertLaTeXToImage()
     {
       var (texDoc, htmlDoc) = GetDocuments();
 
@@ -137,7 +127,7 @@ namespace SuperMemoAssistant.Plugins.LaTeX
       htmlDoc.Text = texDoc.ConvertLaTeXToImages();
     }
 
-    private void ConvertImagesToLaTeX()
+    private void ConvertImageToLaTeX()
     {
       var (texDoc, htmlDoc) = GetDocuments();
 

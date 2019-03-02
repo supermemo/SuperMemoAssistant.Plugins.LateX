@@ -14,6 +14,7 @@
     <AssemblyName>SuperMemoAssistant.Plugins.LaTeX</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <AssemblyVersion>0.1.130</AssemblyVersion>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
@@ -146,6 +147,10 @@
     <ProjectReference Include="..\..\Services\SuperMemoAssistant.Services.Medias.Images\SuperMemoAssistant.Services.Medias.Images.csproj">
       <Project>{677647e4-f052-41d0-915a-ad76da72463e}</Project>
       <Name>SuperMemoAssistant.Services.Medias.Images</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Services\SuperMemoAssistant.Services.UI\SuperMemoAssistant.Services.UI.csproj">
+      <Project>{7F7B4A1F-01E1-440E-89DB-08F7D1D5A128}</Project>
+      <Name>SuperMemoAssistant.Services.UI</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
