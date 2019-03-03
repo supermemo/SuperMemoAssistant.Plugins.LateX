@@ -36,6 +36,7 @@ using SuperMemoAssistant.Extensions;
 using SuperMemoAssistant.Interop.SuperMemo.Content.Controls;
 using SuperMemoAssistant.Services;
 using SuperMemoAssistant.Services.IO.HotKeys;
+using SuperMemoAssistant.Services.IO.Keyboard;
 using SuperMemoAssistant.Services.Sentry;
 using SuperMemoAssistant.Services.UI.Configuration;
 using SuperMemoAssistant.Sys.IO.Devices;
@@ -91,12 +92,14 @@ namespace SuperMemoAssistant.Plugins.LaTeX
          .RegisterGlobal(
            "LaTeXToImage",
            "Convert LaTeX to Image",
+           HotKeyScope.SMBrowser,
            new HotKey(Key.L, KeyModifiers.CtrlAlt),
            ConvertLaTeXToImage
          )
          .RegisterGlobal(
            "ImageToLaTeX",
            "Convert Image to LaTeX",
+           HotKeyScope.SMBrowser,
            new HotKey(Key.L, KeyModifiers.CtrlAltShift),
            ConvertImageToLaTeX
          );
