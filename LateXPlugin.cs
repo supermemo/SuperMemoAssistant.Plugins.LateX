@@ -83,10 +83,6 @@ namespace SuperMemoAssistant.Plugins.LaTeX
     protected override void PluginInit()
     {
       LoadConfigOrDefault();
-      //SettingsModels = new List<INotifyPropertyChangedEx>
-      //{
-      //  Config
-      //};
 
       Svc.HotKeyManager
          .RegisterGlobal(
@@ -163,7 +159,7 @@ namespace SuperMemoAssistant.Plugins.LaTeX
       {
         Config = LaTeXConst.Default;
 
-        Svc.Configuration.Save(Config).ConfigureAwait(false);
+        //Svc.Configuration.Save(Config).ConfigureAwait(false);
       }
     }
 
