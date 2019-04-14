@@ -74,6 +74,7 @@ namespace SuperMemoAssistant.Plugins.LaTeX
 
     [JsonIgnore]
     [Field(Name = "(Step 1) DVI Generation command line")]
+    [MultiLine]
     public string DviGenerationCmdConfig
     {
       get => string.Join("\n",
@@ -88,8 +89,7 @@ namespace SuperMemoAssistant.Plugins.LaTeX
     {
       get => string.Join("\n",
                          ImageGenerationCmd);
-      set => ImageGenerationCmd = value.Replace("\r\n",
-                                                "\n").Split('\n').ToList();
+      set => ImageGenerationCmd = value.Replace("\r\n", "\n").Split('\n').ToList();
     }
 
     [Field(Name = "(Step 3) HTML LaTeX <img> tag")]
