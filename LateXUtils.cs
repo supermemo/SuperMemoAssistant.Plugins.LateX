@@ -34,6 +34,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Web;
 using JetBrains.Annotations;
 using SuperMemoAssistant.Extensions;
@@ -75,7 +76,7 @@ namespace SuperMemoAssistant.Plugins.LaTeX
       html = LaTeXConst.RE.Html.Replace(html,
                                    "");
 
-      return html.Trim();
+      return WebUtility.HtmlDecode(html.Trim());
     }
 
     public static string GetPlaceholderValue([NotNull] string arg)
