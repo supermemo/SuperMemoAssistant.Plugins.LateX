@@ -143,10 +143,15 @@ namespace SuperMemoAssistant.Plugins.LaTeX
       if (ctrlHtml == null)
         return (null, null);
 
-      string html = ctrlHtml.Text ?? string.Empty;
+      var html = ctrlHtml.Text ?? string.Empty;
+      //var htmlDoc = ctrlHtml.Document;
+      //var htmlSelObj = htmlDoc?.selection;
+      //string htmlSel = null;
 
-      var texDoc = new LaTeXDocument(Config,
-                                     html);
+      //if (htmlSelObj?.createRange() is IHTMLTxtRange textSel)
+      //  htmlSel = textSel.text;
+
+      var texDoc = new LaTeXDocument(Config, html, null /*htmlSel*/);
 
       return (texDoc, ctrlHtml);
     }

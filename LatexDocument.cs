@@ -21,8 +21,8 @@
 // DEALINGS IN THE SOFTWARE.
 // 
 // 
-// Created On:   2018/06/02 22:15
-// Modified On:  2019/01/14 21:09
+// Created On:   2019/03/02 18:29
+// Modified On:  2019/04/18 13:19
 // Modified By:  Alexis
 
 #endregion
@@ -102,13 +102,13 @@ namespace SuperMemoAssistant.Plugins.LaTeX
 
       foreach (var taggedMatches in allTaggedMatches)
       {
-        var itemsOccurences  = new Dictionary<string, int>();
+        var itemsOccurences = new Dictionary<string, int>();
         var processedMatches = GenerateImages(taggedMatches.Item1,
                                               taggedMatches.Item2);
 
         foreach (var processedMatch in processedMatches)
         {
-          var (success, imgFilePathOrError, latexCode, fullHtml) = processedMatch;
+          var (success, imgHtmlOrError, fullHtml) = processedMatch;
 
           int nb = itemsOccurences.SafeGet(fullHtml,
                                            0) + 1;
@@ -117,22 +117,20 @@ namespace SuperMemoAssistant.Plugins.LaTeX
           if (success)
             try
             {
-              var imgHtml = GenerateImgHtml(imgFilePathOrError,
-                                            taggedMatches.Item1.SurroundTexWith(latexCode));
               newSelection = newSelection.ReplaceNth(fullHtml,
-                                                     imgHtml,
+                                                     imgHtmlOrError,
                                                      nb);
             }
             catch (Exception ex)
             {
-              success            = false;
-              imgFilePathOrError = ex.Message;
+              success        = false;
+              imgHtmlOrError = ex.Message;
             }
 
           if (success == false)
             newSelection = newSelection.ReplaceNth(fullHtml,
                                                    GenerateErrorHtml(fullHtml,
-                                                                     imgFilePathOrError),
+                                                                     imgHtmlOrError),
                                                    nb);
         }
       }
@@ -182,7 +180,7 @@ namespace SuperMemoAssistant.Plugins.LaTeX
     private Size GetSvgSize(string filePath)
     {
       XDocument doc = XDocument.Load(filePath);
-      
+
       if (doc == null)
         throw new ArgumentException($"Output format unsupported \"{filePath}\".");
 
@@ -217,11 +215,11 @@ namespace SuperMemoAssistant.Plugins.LaTeX
                                   error);
     }
 
-    private IEnumerable<(bool success, string imgFilePathOrError, string latexCode, string originalHtml)> GenerateImages(
+    private IEnumerable<(bool success, string imgHtmlOrError, string originalHtml)> GenerateImages(
       LaTeXTag        tag,
       MatchCollection matches)
     {
-      List<(bool, string, string, string)> ret = new List<(bool, string, string, string)>();
+      List<(bool, string, string)> ret = new List<(bool, string, string)>();
 
       foreach (Match match in matches)
       {
@@ -232,23 +230,26 @@ namespace SuperMemoAssistant.Plugins.LaTeX
         {
           latexCode = LaTeXUtils.PlainText(latexCode);
 
-          var (success, pathOrError) = LaTeXUtils.GenerateDviFile(Config,
-                                                                  tag,
-                                                                  latexCode);
+          var (success, imgHtmlOrError) = LaTeXUtils.GenerateDviFile(Config,
+                                                                     tag,
+                                                                     latexCode);
 
           if (success == false)
           {
-            ret.Add((false, pathOrError, null, originalHtml));
+            ret.Add((false, imgHtmlOrError, originalHtml));
             continue;
           }
 
-          (success, pathOrError) = LaTeXUtils.GenerateImgFile(Config);
+          (success, imgHtmlOrError) = LaTeXUtils.GenerateImgFile(Config);
 
-          ret.Add((success, pathOrError, latexCode, originalHtml));
+          imgHtmlOrError = GenerateImgHtml(imgHtmlOrError,
+                                           tag.SurroundTexWith(latexCode));
+
+          ret.Add((success, imgHtmlOrError, originalHtml));
         }
         catch (Exception ex)
         {
-          ret.Add((false, ex.Message, null, originalHtml));
+          ret.Add((false, ex.Message, originalHtml));
         }
       }
 
