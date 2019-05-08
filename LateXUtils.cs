@@ -30,7 +30,6 @@
 
 
 
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -134,7 +133,7 @@ namespace SuperMemoAssistant.Plugins.LaTeX
       var args = fullCmd.Skip(1).Select(GetPlaceholderValue);
 
       var p = ProcessEx.CreateBackgroundProcess(bin,
-                                                String.Join(" ",
+                                                string.Join(" ",
                                                             args),
                                                 Path.GetTempPath());
 

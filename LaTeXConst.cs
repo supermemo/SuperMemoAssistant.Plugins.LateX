@@ -77,7 +77,7 @@ namespace SuperMemoAssistant.Plugins.LaTeX
 
       public static LaTeXTag FullTag => new LaTeXTag
       {
-        LaTeXBegin = @"\documentclass[12pt]{article}
+        LaTeXBegin = @"\documentclass[10pt]{article}
 \special{papersize=3in,5in}
 \usepackage[utf8]{inputenc}
 \usepackage{amssymb,amsmath}
@@ -92,7 +92,7 @@ namespace SuperMemoAssistant.Plugins.LaTeX
       };
       public static LaTeXTag ExpTag => new LaTeXTag
       {
-        LaTeXBegin = @"\documentclass[12pt]{article}
+        LaTeXBegin = @"\documentclass[10pt]{article}
 \special{papersize=3in,5in}
 \usepackage[utf8]{inputenc}
 \usepackage{amssymb,amsmath}
@@ -109,7 +109,7 @@ $
       };
       public static LaTeXTag MathsTag => new LaTeXTag
       {
-        LaTeXBegin = @"\documentclass[12pt]{article}
+        LaTeXBegin = @"\documentclass[10pt]{article}
 \special{papersize=3in,5in}
 \usepackage[utf8]{inputenc}
 \usepackage{amssymb,amsmath}

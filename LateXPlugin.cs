@@ -32,6 +32,7 @@
 
 using System.Windows;
 using System.Windows.Input;
+using mshtml;
 using SuperMemoAssistant.Extensions;
 using SuperMemoAssistant.Interop.SuperMemo.Content.Controls;
 using SuperMemoAssistant.Services;
@@ -144,14 +145,14 @@ namespace SuperMemoAssistant.Plugins.LaTeX
         return (null, null);
 
       var html = ctrlHtml.Text ?? string.Empty;
-      //var htmlDoc = ctrlHtml.Document;
-      //var htmlSelObj = htmlDoc?.selection;
-      //string htmlSel = null;
+      var htmlDoc = ctrlHtml.GetDocument();
+      var htmlSelObj = htmlDoc?.selection;
+      string htmlSel = null;
 
-      //if (htmlSelObj?.createRange() is IHTMLTxtRange textSel)
-      //  htmlSel = textSel.text;
+      if (htmlSelObj?.createRange() is IHTMLTxtRange textSel)
+        htmlSel = textSel.text;
 
-      var texDoc = new LaTeXDocument(Config, html, null /*htmlSel*/);
+      var texDoc = new LaTeXDocument(Config, html, htmlSel);
 
       return (texDoc, ctrlHtml);
     }
