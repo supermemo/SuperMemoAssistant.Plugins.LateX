@@ -139,7 +139,7 @@ namespace SuperMemoAssistant.Plugins.LaTeX
 
     private (LaTeXDocument texDoc, IControlHtml ctrlHtml) GetDocuments()
     {
-      IControlHtml ctrlHtml = Svc.SMA.UI.ElementWindow.ControlGroup.FocusedControl.AsHtml();
+      IControlHtml ctrlHtml = Svc.SM.UI.ElementWdw.ControlGroup.FocusedControl.AsHtml();
 
       if (ctrlHtml == null)
         return (null, null);
