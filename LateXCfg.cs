@@ -95,6 +95,10 @@ namespace SuperMemoAssistant.Plugins.LaTeX
     [Field(Name = "(Step 3) HTML LaTeX <img> tag")]
     public string LaTeXImageTag { get; set; } = LaTeXConst.Html.LaTeXImagePng;
 
+    [Field]
+    [Value(Must.BeGreaterThan, 0, StrictValidation = true)]
+    public int ExecutionTimeout { get; set; } = 3000
+
     #endregion
 
 
@@ -128,7 +132,8 @@ namespace SuperMemoAssistant.Plugins.LaTeX
     {
       return Tags != null && Tags.Count > 0
         && DviGenerationCmd != null && DviGenerationCmd.Count > 0
-        && ImageGenerationCmd != null && ImageGenerationCmd.Count > 0;
+        && ImageGenerationCmd != null && ImageGenerationCmd.Count > 0
+        && ExecutionTimeout > 0;
     }
 
     public Dictionary<Regex, LaTeXTag> GenerateTagsRegex()

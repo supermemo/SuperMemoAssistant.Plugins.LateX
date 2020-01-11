@@ -103,7 +103,7 @@ namespace SuperMemoAssistant.Plugins.LaTeX
       if (File.Exists(imgFilePath))
         File.Delete(imgFilePath);
 
-      var (success, output) = Execute(config.ImageGenerationCmd);
+      var (success, output) = Execute(config.ImageGenerationCmd, config.ExecutionTimeout);
 
       return (success, success ? imgFilePath : output);
     }
@@ -122,12 +122,12 @@ namespace SuperMemoAssistant.Plugins.LaTeX
 
       File.WriteAllText(LaTeXConst.Paths.TempTexFilePath,
                         latexContent);
-      var (success, output) = Execute(config.DviGenerationCmd);
+      var (success, output) = Execute(config.DviGenerationCmd, config.ExecutionTimeout);
 
       return (success, success ? LaTeXConst.Paths.TempDviFilePath : output);
     }
 
-    public static (bool success, string output) Execute(List<string> fullCmd)
+    public static (bool success, string output) Execute(List<string> fullCmd, int timeout)
     {
       var bin  = fullCmd[0];
       var args = fullCmd.Skip(1).Select(GetPlaceholderValue);
@@ -137,7 +137,7 @@ namespace SuperMemoAssistant.Plugins.LaTeX
                                                             args),
                                                 Path.GetTempPath());
 
-      var (exitCode, output, timedOut) = p.ExecuteBlockingWithOutputs(3000);
+      var (exitCode, output, timedOut) = p.ExecuteBlockingWithOutputs(300000);
 
       return (timedOut == false && exitCode == 0, output);
     }

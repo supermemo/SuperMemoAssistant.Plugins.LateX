@@ -242,6 +242,14 @@ namespace SuperMemoAssistant.Plugins.LaTeX
 
           (success, imgHtmlOrError) = LaTeXUtils.GenerateImgFile(Config);
 
+          if (success && string.IsNullOrWhiteSpace(imgHtmlOrError))
+          {
+            ret.Add((false,
+                     "An unknown error occured, make sure your TeX installation has all the required packages, "
+                     + "or set it to install missing packages on-the-fly",
+                     originalHtml));
+          }
+
           imgHtmlOrError = GenerateImgHtml(imgHtmlOrError,
                                            tag.SurroundTexWith(latexCode));
 
