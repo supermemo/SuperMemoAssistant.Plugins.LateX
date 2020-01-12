@@ -97,7 +97,7 @@ namespace SuperMemoAssistant.Plugins.LaTeX
 
     [Field]
     [Value(Must.BeGreaterThan, 0, StrictValidation = true)]
-    public int ExecutionTimeout { get; set; } = 3000
+    public int ExecutionTimeout { get; set; } = 3000;
 
     #endregion
 
