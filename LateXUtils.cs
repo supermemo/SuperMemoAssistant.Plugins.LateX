@@ -35,7 +35,6 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Web;
-using JetBrains.Annotations;
 using SuperMemoAssistant.Extensions;
 
 namespace SuperMemoAssistant.Plugins.LaTeX
@@ -49,7 +48,7 @@ namespace SuperMemoAssistant.Plugins.LaTeX
     //  return null;
     //}
 
-    public static string TextToHtml([NotNull] string text)
+    public static string TextToHtml(string text)
     {
       text = HttpUtility.HtmlEncode(text);
       text = text.Replace("\r\n",
@@ -64,7 +63,7 @@ namespace SuperMemoAssistant.Plugins.LaTeX
       return text;
     }
 
-    public static string PlainText([NotNull] string html)
+    public static string PlainText(string html)
     {
       html = LaTeXConst.RE.Br.Replace(html,
                                  "\\n");
@@ -78,7 +77,7 @@ namespace SuperMemoAssistant.Plugins.LaTeX
       return WebUtility.HtmlDecode(html.Trim());
     }
 
-    public static string GetPlaceholderValue([NotNull] string arg)
+    public static string GetPlaceholderValue(string arg)
     {
       switch (arg)
       {

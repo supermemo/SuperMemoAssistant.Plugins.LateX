@@ -30,8 +30,10 @@
 
 
 
+using System.Runtime.Remoting;
 using System.Windows;
 using System.Windows.Input;
+using Anotar.Serilog;
 using mshtml;
 using SuperMemoAssistant.Extensions;
 using SuperMemoAssistant.Interop.SuperMemo.Content.Controls;
@@ -119,22 +121,36 @@ namespace SuperMemoAssistant.Plugins.LaTeX
 
     private void ConvertLaTeXToImage()
     {
-      var (texDoc, htmlDoc) = GetDocuments();
+      try
+      {
+        var (texDoc, htmlDoc) = GetDocuments();
 
-      if (texDoc == null || htmlDoc == null)
-        return;
+        if (texDoc == null || htmlDoc == null)
+          return;
 
-      htmlDoc.Text = texDoc.ConvertLaTeXToImages();
+        htmlDoc.Text = texDoc.ConvertLaTeXToImages();
+      }
+      catch (RemotingException ex)
+      {
+        LogTo.Warning(ex, "ConvertLaTeXToImage failed.");
+      }
     }
 
     private void ConvertImageToLaTeX()
     {
-      var (texDoc, htmlDoc) = GetDocuments();
+      try
+      {
+        var (texDoc, htmlDoc) = GetDocuments();
 
-      if (texDoc == null || htmlDoc == null)
-        return;
+        if (texDoc == null || htmlDoc == null)
+          return;
 
-      htmlDoc.Text = texDoc.ConvertImagesToLaTeX();
+        htmlDoc.Text = texDoc.ConvertImagesToLaTeX();
+      }
+      catch (RemotingException ex)
+      {
+        LogTo.Warning(ex, "ConvertImageToLaTeX failed.");
+      }
     }
 
     private (LaTeXDocument texDoc, IControlHtml ctrlHtml) GetDocuments()

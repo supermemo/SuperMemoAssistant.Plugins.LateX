@@ -37,7 +37,6 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
-using JetBrains.Annotations;
 using SuperMemoAssistant.Extensions;
 
 namespace SuperMemoAssistant.Plugins.LaTeX
@@ -58,8 +57,8 @@ namespace SuperMemoAssistant.Plugins.LaTeX
     #region Constructors
 
     public LaTeXDocument(
-      [NotNull] LaTeXCfg config,
-      [NotNull] string   html,
+      LaTeXCfg config,
+      string   html,
       string             selection = null)
     {
       Config    = config;
