@@ -199,6 +199,8 @@ $
         TempFilePath + ".tex";
       public static string TempDviFilePath =>
         TempFilePath + ".dvi";
+      public static string TempTexLog => TempFilePath + ".log";
+      public const string TexErrorLog = "texput.log";
 
       #endregion
     }

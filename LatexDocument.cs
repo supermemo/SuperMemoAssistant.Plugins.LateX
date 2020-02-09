@@ -109,8 +109,7 @@ namespace SuperMemoAssistant.Plugins.LaTeX
         {
           var (success, imgHtmlOrError, fullHtml) = processedMatch;
 
-          int nb = itemsOccurences.SafeGet(fullHtml,
-                                           0) + 1;
+          int nb = itemsOccurences.SafeGet(fullHtml, 0) + 1;
           itemsOccurences[fullHtml] = nb;
 
           if (success)
@@ -229,9 +228,7 @@ namespace SuperMemoAssistant.Plugins.LaTeX
         {
           latexCode = LaTeXUtils.PlainText(latexCode);
 
-          var (success, imgHtmlOrError) = LaTeXUtils.GenerateDviFile(Config,
-                                                                     tag,
-                                                                     latexCode);
+          var (success, imgHtmlOrError) = LaTeXUtils.GenerateDviFile(Config, tag, latexCode);
 
           if (success == false)
           {

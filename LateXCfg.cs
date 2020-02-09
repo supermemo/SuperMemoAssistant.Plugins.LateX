@@ -77,18 +77,15 @@ namespace SuperMemoAssistant.Plugins.LaTeX
     [MultiLine]
     public string DviGenerationCmdConfig
     {
-      get => string.Join("\n",
-                         DviGenerationCmd);
-      set => DviGenerationCmd = value.Replace("\r\n",
-                                              "\n").Split('\n').ToList();
+      get => string.Join("\n", DviGenerationCmd);
+      set => DviGenerationCmd = value.Replace("\r\n", "\n").Split('\n').ToList();
     }
 
     [JsonIgnore]
     [Field(Name = "(Step 2) Image Generation command line")]
     public string ImageGenerationCmdConfig
     {
-      get => string.Join("\n",
-                         ImageGenerationCmd);
+      get => string.Join("\n", ImageGenerationCmd);
       set => ImageGenerationCmd = value.Replace("\r\n", "\n").Split('\n').ToList();
     }
 
