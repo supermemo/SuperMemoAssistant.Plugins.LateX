@@ -6,7 +6,7 @@
 // copy of this software and associated documentation files (the "Software"),
 // to deal in the Software without restriction, including without limitation
 // the rights to use, copy, modify, merge, publish, distribute, sublicense,
-// and/or sell copies of the Software, and to permit persons to whom the 
+// and/or sell copies of the Software, and to permit persons to whom the
 // Software is furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
@@ -21,8 +21,7 @@
 // DEALINGS IN THE SOFTWARE.
 // 
 // 
-// Created On:   2018/05/31 19:22
-// Modified On:  2019/02/23 23:19
+// Modified On:  2020/03/12 13:10
 // Modified By:  Alexis
 
 #endregion
@@ -36,6 +35,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Forge.Forms.Annotations;
 using Newtonsoft.Json;
+using SuperMemoAssistant.Services.UI.Configuration;
 using SuperMemoAssistant.Sys.ComponentModel;
 
 // ReSharper disable UnassignedGetOnlyAutoProperty
@@ -44,15 +44,15 @@ namespace SuperMemoAssistant.Plugins.LaTeX
 {
   [Form(Mode = DefaultFields.None)]
   [Title("LaTeX Settings",
-    IsVisible = "{Env DialogHostContext}")]
+         IsVisible = "{Env DialogHostContext}")]
   [DialogAction("cancel",
-    "Cancel",
-    IsCancel = true)]
+                "Cancel",
+                IsCancel = true)]
   [DialogAction("save",
-    "Save",
-    IsDefault = true,
-    Validates = true)]
-  public class LaTeXCfg : INotifyPropertyChangedEx
+                "Save",
+                IsDefault = true,
+                Validates = true)]
+  public class LaTeXCfg : CfgBase<LaTeXCfg>, INotifyPropertyChangedEx
   {
     #region Properties & Fields - Non-Public
 
