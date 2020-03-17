@@ -28,7 +28,7 @@
         <dependency id="Serilog" version="2.9.0" />
         <dependency id="SuperMemoAssistant.Interop" version="2.0.3.18" />
         <dependency id="SuperMemoAssistant.Services.Sentry" version="1.0.1.14" />
-        <dependency id="SuperMemoAssistant.Services.UI" version="2.0.3.18" />
+        <dependency id="SuperMemoAssistant.Services.UI" version="2.0.3.20" />
       </group>
     </dependencies>
   </metadata>
