@@ -105,27 +105,27 @@
       <Version>1.1.2</Version>
     </PackageReference>
     <PackageReference Include="MSBuild.Tools">
-      <Version>0.2.40</Version>
+      <Version>0.2.41</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="PluginManager.Interop">
-      <Version>0.2.1.36</Version>
+      <Version>0.2.1.37</Version>
     </PackageReference>
     <PackageReference Include="PropertyChanged.Fody">
       <Version>3.2.6</Version>
     </PackageReference>
     <PackageReference Include="Sentry.Serilog">
-      <Version>2.1.0</Version>
+      <Version>2.1.1</Version>
     </PackageReference>
     <PackageReference Include="SuperMemoAssistant.Interop">
-      <Version>2.0.3.32</Version>
+      <Version>2.0.4.7</Version>
     </PackageReference>
     <PackageReference Include="SuperMemoAssistant.Services.Sentry">
       <Version>1.0.1.14</Version>
     </PackageReference>
     <PackageReference Include="SuperMemoAssistant.Services.UI">
-      <Version>2.0.3.23</Version>
+      <Version>2.0.4.2</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
