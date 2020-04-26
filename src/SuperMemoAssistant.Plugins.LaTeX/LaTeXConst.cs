@@ -197,8 +197,7 @@ $
       #region Constants & Statics
 
       public static string TempFilePath =>
-        Path.Combine(Path.GetTempPath(),
-                     typeof(LaTeXPlugin).GetAssemblyGuid().ToString("D", CultureInfo.InvariantCulture));
+        Path.Combine(Path.GetTempPath(), typeof(LaTeXPlugin).GetAssemblyName());
       public static string TempTexFilePath =>
         TempFilePath + ".tex";
       public static string TempDviFilePath =>
