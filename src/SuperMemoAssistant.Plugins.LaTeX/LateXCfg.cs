@@ -31,6 +31,7 @@
 
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Forge.Forms.Annotations;
@@ -42,7 +43,7 @@ using SuperMemoAssistant.Sys.ComponentModel;
 
 namespace SuperMemoAssistant.Plugins.LaTeX
 {
-  [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "<Pending>")]
+  [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "<Pending>")]
   [Form(Mode = DefaultFields.None)]
   [Title("LaTeX Settings",
          IsVisible = "{Env DialogHostContext}")]
