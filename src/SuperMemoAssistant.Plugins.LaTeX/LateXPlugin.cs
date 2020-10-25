@@ -31,7 +31,6 @@
 
 
 using System.Runtime.Remoting;
-using System.Windows;
 using System.Windows.Input;
 using Anotar.Serilog;
 using mshtml;
@@ -83,10 +82,16 @@ namespace SuperMemoAssistant.Plugins.LaTeX
     #region Methods Impl
 
     /// <inheritdoc />
-    protected override void PluginInit()
+    protected override void OnPluginInitialized()
     {
       LoadConfigOrDefault();
 
+      base.OnPluginInitialized();
+    }
+    
+    /// <inheritdoc />
+    protected override void OnSMStarted()
+    {
       Svc.HotKeyManager
          .RegisterGlobal(
            "LaTeXToImage",
@@ -102,8 +107,10 @@ namespace SuperMemoAssistant.Plugins.LaTeX
            new HotKey(Key.L, KeyModifiers.CtrlAltShift),
            ConvertImageToLaTeX
          );
+
+      base.OnSMStarted();
     }
-    
+
     /// <inheritdoc />
     public override void ShowSettings()
     {
