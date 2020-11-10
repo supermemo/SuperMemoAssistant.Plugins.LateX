@@ -51,7 +51,7 @@ namespace SuperMemoAssistant.Plugins.LaTeX
   {
     #region Constructors
 
-    public LaTeXPlugin() : base("https://a63c3dad9552434598dae869d2026696@sentry.io/1362046") { }
+    public LaTeXPlugin() : base("https://56a5990e7c894abcae25a14e7f6bd113@o218793.ingest.sentry.io/5506803") { }
 
     #endregion
 
@@ -90,7 +90,7 @@ namespace SuperMemoAssistant.Plugins.LaTeX
     }
     
     /// <inheritdoc />
-    protected override void OnSMStarted()
+    protected override void OnSMStarted(bool wasSMAlreadyStarted)
     {
       Svc.HotKeyManager
          .RegisterGlobal(
@@ -108,7 +108,7 @@ namespace SuperMemoAssistant.Plugins.LaTeX
            ConvertImageToLaTeX
          );
 
-      base.OnSMStarted();
+      base.OnSMStarted(wasSMAlreadyStarted);
     }
 
     /// <inheritdoc />
