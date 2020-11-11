@@ -174,7 +174,7 @@ $
       #region Constants & Statics
 
       public const string LaTeXImagePng =
-        @"<img class=""sma-latex-img"" width=""{0}"" height=""{1}"" style=""background-image:url('data:image/png;base64,{2}'); background-repeat: no-repeat"" data-latex-code=""{3}"" />";
+        @"<img class=""sma-latex-img"" width=""{0}"" height=""{1}"" style=""background-image:url('data:image/png;base64,{2}'); background-repeat: no-repeat"" data-latex-code=""{3}"" data-timestamp=""{4}"" />";
       public const string LaTeXError = "\n<br />\n<br /><div class=\"sma-latex-error\"><font color=\"#ff0000\">{0}</font></div>";
 
       public const string CSS = @"
