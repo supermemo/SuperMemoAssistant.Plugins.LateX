@@ -246,7 +246,7 @@ namespace SuperMemoAssistant.Plugins.LaTeX
           if (success && string.IsNullOrWhiteSpace(imgHtmlOrError))
           {
             ret.Add((false,
-                     "An unknown error occured, make sure your TeX installation has all the required packages, "
+                     "An unknown error occurred, make sure your TeX installation has all the required packages, "
                      + "or set it to install missing packages on-the-fly",
                      originalHtml));
           }
