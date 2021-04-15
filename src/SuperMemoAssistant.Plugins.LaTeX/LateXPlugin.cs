@@ -114,7 +114,15 @@ namespace SuperMemoAssistant.Plugins.LaTeX
     /// <inheritdoc />
     public override void ShowSettings()
     {
-      ConfigurationWindow.ShowAndActivate("LaTeX Settings", HotKeyManager.Instance, Config);
+      try
+      {
+        ConfigurationWindow.ShowAndActivate("LaTeX Settings", HotKeyManager.Instance, Config);
+      }
+      catch (System.Exception ex)
+      {
+        LogTo.Error(ex, "Exception caught while showing LaTeX settings.");
+        throw;
+      }
     }
 
     #endregion

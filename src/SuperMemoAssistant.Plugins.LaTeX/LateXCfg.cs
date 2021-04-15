@@ -137,7 +137,10 @@ namespace SuperMemoAssistant.Plugins.LaTeX
 
     public Dictionary<Regex, LaTeXTag> GenerateTagsRegex()
     {
-      Dictionary<Regex, LaTeXTag> ret = new Dictionary<Regex, LaTeXTag>();
+      var ret = new Dictionary<Regex, LaTeXTag>();
+
+      if (Tags == null)
+        return null;
 
       foreach (var tag in Tags.Values)
       {
